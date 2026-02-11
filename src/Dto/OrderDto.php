@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto;
 
 /**
- * DTO zamówienia z API InPost Buy.
+ * Order DTO from InPost Buy API.
  */
 final class OrderDto
 {

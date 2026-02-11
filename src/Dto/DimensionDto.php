@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto;
 
 /**
- * Wymiary opakowania produktu (OpenAPI: Dimension).
- * Szerokość, wysokość i długość w mm, waga w g.
+ * Product packaging dimensions (OpenAPI: Dimension).
+ * Width, height and length in mm, weight in g.
  */
 final class DimensionDto
 {
@@ -16,5 +16,16 @@ final class DimensionDto
         public int $length,
         public int $weight,
     ) {
+    }
+
+    /** @return array{width: int, height: int, length: int, weight: int} */
+    public function toArray(): array
+    {
+        return [
+            'width' => $this->width,
+            'height' => $this->height,
+            'length' => $this->length,
+            'weight' => $this->weight,
+        ];
     }
 }

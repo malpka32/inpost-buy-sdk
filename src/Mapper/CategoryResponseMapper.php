@@ -4,33 +4,25 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Mapper;
 
+use malpka32\InPostBuySdk\Collection\CategoryCollection;
 use malpka32\InPostBuySdk\Dto\CategoryDto;
 
 /**
- * Mapuje odpowiedź API na listę CategoryDto.
+ * Maps API response to CategoryCollection.
  */
-final class CategoryResponseMapper
+final class CategoryResponseMapper implements ResponseMapperInterface
 {
-    /**
-     * @return CategoryDto[]
-     */
-    public function map(array $data): array
+    public function map(array $data): CategoryCollection
     {
-        $list = $data['items'] ?? $data['categories'] ?? (isset($data['id']) ? [$data] : $data);
-        if (!is_array($list)) {
-            return [];
-        }
-        $out = [];
+        $collection = new CategoryCollection();
+        $list = ArrayHelper::getList($data, ['items', 'categories']);
         foreach ($list as $item) {
-            if (!is_array($item)) {
-                continue;
-            }
-            $out[] = new CategoryDto(
-                id: $item['id'] ?? null,
-                name: $item['name'] ?? null,
-                parentId: $item['parent_id'] ?? $item['parentId'] ?? null,
-            );
+            $collection->add(new CategoryDto(
+                id: ArrayHelper::get($item, 'id'),
+                name: ArrayHelper::get($item, 'name'),
+                parentId: ArrayHelper::get($item, ['parent_id', 'parentId']),
+            ));
         }
-        return $out;
+        return $collection;
     }
 }

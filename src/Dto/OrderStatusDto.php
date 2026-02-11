@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto;
 
 /**
- * DTO statusu zamówienia do aktualizacji w InPost.
+ * Order status DTO for InPost update.
  */
 final class OrderStatusDto
 {
