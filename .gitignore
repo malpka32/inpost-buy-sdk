@@ -1,0 +1,6 @@
+/vendor/
+/src/make/
+/.cursor/
+/.phpunit.cache/
+/.php-cs-fixer.cache/
+/build/
