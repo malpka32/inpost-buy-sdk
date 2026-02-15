@@ -21,7 +21,8 @@ InPost Buy (inpsa) lets merchants integrate their product catalog and orders wit
 - **Categories** — fetch product category tree (read-only)
 - **Offers** — create single or batch offers with products, stock, and pricing
 - **Orders** — list orders, fetch details, accept or refuse with status updates
-- **OAuth2** — automatic token acquisition (client credentials grant) with in-memory caching
+- **OAuth2** — client credentials grant (default) with in-memory caching; **OAuth2 PKCE** (Authorization Code flow) for merchant integrations (e.g. PrestaShop modules)
+- **Custom token provider** — use `InPostBuyClient::createWithTokenProvider()` with any `AccessTokenProviderInterface`
 - **Typed DTOs** — `OfferDto`, `ProductDto`, `OrderDto` etc., no raw arrays in your code
 - **Exceptions** — `NotFoundException`, `BadRequestException`, `ServerException` etc. with HTTP status and error details
 
@@ -162,6 +163,54 @@ foreach ($offers as $offer) {
 }
 ```
 
+### OAuth2 PKCE (merchant flow)
+
+For integrations where merchants authorize via OAuth2 (e.g. PrestaShop modules), use PKCE flow:
+
+```php
+use malpka32\InPostBuySdk\Auth\PkceOAuth2Client;
+use malpka32\InPostBuySdk\Auth\PkceTokenProvider;
+use malpka32\InPostBuySdk\Client\InPostBuyClient;
+use malpka32\InPostBuySdk\Config\InPostBuyEndpoints;
+
+// 1. Initiate authorization – redirect merchant to $result['authorize_url']
+$pkceClient = new PkceOAuth2Client($httpClient);
+$result = $pkceClient->initiateAuthorization(
+    redirectUri: 'https://your-shop.com/module/callback',
+    clientId: $clientId,
+    sandbox: true,
+    stateStorage: $yourPkceStateStorage,  // implement PkceStateStorageInterface
+);
+
+// 2. On callback – exchange code for tokens
+$tokens = $pkceClient->exchangeCodeForTokens(
+    code: $_GET['code'],
+    redirectUri: $redirectUri,
+    clientId: $clientId,
+    clientSecret: $clientSecret,
+    state: $_GET['state'],
+    tokenUrl: InPostBuyEndpoints::tokenUrl($sandbox),
+    stateStorage: $yourPkceStateStorage,
+    tokenStorage: $yourTokenStorage,  // implement TokenStorageInterface
+);
+
+// 3. Create client with token provider
+$tokenProvider = new PkceTokenProvider(
+    $yourTokenStorage,
+    $pkceClient,
+    $clientId,
+    $clientSecret,
+    InPostBuyEndpoints::tokenUrl($sandbox),
+);
+
+$client = InPostBuyClient::createWithTokenProvider(
+    $httpClient,
+    $tokenProvider,
+    $organizationId,
+    sandbox: true,
+);
+```
+
 ### Orders
 
 ```php
@@ -235,8 +284,9 @@ try {
 ## Testing & quality
 
 ```bash
+composer ci                # full check: PHPStan, cs-check, tests
 composer test              # run tests
-composer test:coverage     # tests + coverage (clover + text in build/coverage/)
+composer test:coverage     # tests + coverage (clover + HTML in build/coverage/)
 composer phpstan           # static analysis (level 10)
 composer cs-check          # code style check (PSR-12, dry run)
 composer cs-fix            # fix code style (PHP-CS-Fixer)
@@ -245,6 +295,7 @@ composer cs-fix            # fix code style (PHP-CS-Fixer)
 With Docker:
 
 ```bash
+docker compose run --rm test ci        # full check (recommended before commit)
 docker compose run --rm test           # tests
 docker compose run --rm test phpstan   # PHPStan
 docker compose run --rm test cs-check  # code style

@@ -11,6 +11,7 @@ use malpka32\InPostBuySdk\Collection\OfferIdCollection;
 use malpka32\InPostBuySdk\Collection\OrderCollection;
 use malpka32\InPostBuySdk\Api\OffersEndpoint;
 use malpka32\InPostBuySdk\Api\OrdersEndpoint;
+use malpka32\InPostBuySdk\Auth\AccessTokenProviderInterface;
 use malpka32\InPostBuySdk\Auth\ClientCredentialsTokenProvider;
 use malpka32\InPostBuySdk\Config\InPostBuyEndpoints;
 use malpka32\InPostBuySdk\Dto\CategoryDto;
@@ -36,6 +37,18 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class InPostBuyClient implements InPostBuyClientInterface
 {
+    /**
+     * Creates client with custom token provider (e.g. PKCE for merchant OAuth).
+     */
+    public static function createWithTokenProvider(
+        HttpClientInterface $httpClient,
+        AccessTokenProviderInterface $tokenProvider,
+        string $organizationId,
+        bool $sandbox = false,
+    ): self {
+        return new self($httpClient, '', '', $organizationId, $sandbox, $tokenProvider);
+    }
+
     private readonly CategoriesRepository $categoriesRepository;
     private readonly OffersRepository $offersRepository;
     private readonly OrdersRepository $ordersRepository;
@@ -46,12 +59,18 @@ final class InPostBuyClient implements InPostBuyClientInterface
         string $clientSecret,
         string $organizationId,
         bool $sandbox = false,
+        ?AccessTokenProviderInterface $tokenProvider = null,
     ) {
         $baseUrl = InPostBuyEndpoints::baseUrl($sandbox);
         $tokenUrl = InPostBuyEndpoints::tokenUrl($sandbox);
 
-        $tokenProvider = new ClientCredentialsTokenProvider($httpClient, $tokenUrl, $clientId, $clientSecret);
-        $transport = new ApiTransport($httpClient, $tokenProvider);
+        $effectiveTokenProvider = $tokenProvider ?? new ClientCredentialsTokenProvider(
+            $httpClient,
+            $tokenUrl,
+            $clientId,
+            $clientSecret
+        );
+        $transport = new ApiTransport($httpClient, $effectiveTokenProvider);
         $responseDecoder = new ResponseDecoder();
 
         $categoriesEndpoint = new CategoriesEndpoint($transport, $responseDecoder, $baseUrl);

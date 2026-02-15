@@ -32,4 +32,30 @@ final class InPostBuyEndpointsTest extends TestCase
         $url = InPostBuyEndpoints::tokenUrl(true);
         $this->assertSame('https://stage-api.inpost-group.com/oauth2/token', $url);
     }
+
+    public function testAuthorizeUrlProduction(): void
+    {
+        $url = InPostBuyEndpoints::authorizeUrl(false);
+        $this->assertSame('https://account.inpost-group.com/oauth2/authorize', $url);
+    }
+
+    public function testAuthorizeUrlSandbox(): void
+    {
+        $url = InPostBuyEndpoints::authorizeUrl(true);
+        $this->assertSame('https://stage-account.inpost-group.com/oauth2/authorize', $url);
+    }
+
+    public function testAuthorizeUrlWithOverride(): void
+    {
+        $custom = 'https://custom.example.com/oauth2/authorize';
+        $this->assertSame($custom, InPostBuyEndpoints::authorizeUrl(false, $custom));
+        $this->assertSame($custom, InPostBuyEndpoints::authorizeUrl(true, $custom));
+    }
+
+    public function testGetAvailableScopes(): void
+    {
+        $scopes = InPostBuyEndpoints::getAvailableScopes();
+        $this->assertContains('api:offers:read', $scopes);
+        $this->assertContains('api:orders:write', $scopes);
+    }
 }

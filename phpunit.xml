@@ -12,10 +12,10 @@
     </testsuites>
     <source>
         <include>
-            <directory suffix=".php">src</directory>
+            <directory>src</directory>
         </include>
         <exclude>
-            <directory suffix=".php">src/make</directory>
+            <directory>src/make</directory>
         </exclude>
     </source>
 </phpunit>
