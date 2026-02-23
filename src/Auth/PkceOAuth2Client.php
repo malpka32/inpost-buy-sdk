@@ -7,7 +7,7 @@ namespace malpka32\InPostBuySdk\Auth;
 use malpka32\InPostBuySdk\Config\InPostBuyEndpoints;
 use malpka32\InPostBuySdk\Exception\ApiException;
 use malpka32\InPostBuySdk\Exception\ApiExceptionFactory;
-use malpka32\InPostBuySdk\Mapper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -172,7 +172,7 @@ final class PkceOAuth2Client
             throw new ApiException('Missing access_token in OAuth2 refresh response');
         }
 
-        $effectiveRefreshToken = $newRefreshToken !== '' ? $newRefreshToken : $refreshToken;
+        $effectiveRefreshToken = !empty($newRefreshToken) ? $newRefreshToken : $refreshToken;
         if ($effectiveRefreshToken === '') {
             throw new ApiException('No refresh token in OAuth2 refresh response');
         }

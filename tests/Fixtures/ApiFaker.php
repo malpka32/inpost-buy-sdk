@@ -25,17 +25,26 @@ final class ApiFaker
      *
      * @return array<int, array<string, mixed>>
      */
+    /**
+     * Flat category items (API shape: id, name, parentId, parent_id).
+     *
+     * @return list<array<string, mixed>>
+     */
     public function categories(int $count = 3): array
     {
         $out = [];
+        $parentId = null;
         for ($i = 0; $i < $count; $i++) {
+            $id = $this->faker->uuid();
             $out[] = [
-                'id' => $this->faker->uuid(),
-                'leaf' => $this->faker->boolean(30),
+                'id' => $id,
                 'name' => $this->faker->words(2, true),
-                'doesNotRequireGpsrInfo' => $this->faker->boolean(70),
-                'description' => $this->faker->sentence(6),
+                'parentId' => $parentId,
+                'parent_id' => $parentId,
             ];
+            if ($i === 0) {
+                $parentId = $id;
+            }
         }
         return $out;
     }
@@ -260,7 +269,7 @@ final class ApiFaker
     /**
      * Creates OfferDto with random data – for offer send tests.
      */
-    public function createOfferDto(): \malpka32\InPostBuySdk\Dto\OfferDto
+    public function createOfferDto(): \malpka32\InPostBuySdk\Dto\Offer\OfferDto
     {
         $offer = $this->singleOffer();
         $product = $offer['product'];
@@ -268,21 +277,21 @@ final class ApiFaker
         $price = $offer['price'];
         $attrs = new \malpka32\InPostBuySdk\Collection\AttributeValueCollection();
         foreach ($product['attributes'] ?? [] as $a) {
-            $attrs->add(new \malpka32\InPostBuySdk\Dto\AttributeValueDto(
+            $attrs->add(new \malpka32\InPostBuySdk\Dto\Attribute\AttributeValueDto(
                 $a['id'],
                 array_map('strval', $a['values']),
                 $a['lang'] ?? null
             ));
         }
         $dim = !empty($product['dimension'])
-            ? new \malpka32\InPostBuySdk\Dto\DimensionDto(
+            ? new \malpka32\InPostBuySdk\Dto\Offer\Product\DimensionDto(
                 $product['dimension']['width'],
                 $product['dimension']['height'],
                 $product['dimension']['length'],
                 $product['dimension']['weight']
             )
             : null;
-        $productDto = new \malpka32\InPostBuySdk\Dto\ProductDto(
+        $productDto = new \malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto(
             $product['name'],
             $product['description'],
             $product['brand'],
@@ -292,14 +301,14 @@ final class ApiFaker
             $attrs,
             $dim
         );
-        $stockDto = new \malpka32\InPostBuySdk\Dto\StockDto($stock['quantity'], $stock['unit']);
+        $stockDto = new \malpka32\InPostBuySdk\Dto\Offer\StockDto($stock['quantity'], $stock['unit']);
         $gross = $price['grossPrice'];
-        $priceDto = new \malpka32\InPostBuySdk\Dto\PriceDto(
+        $priceDto = new \malpka32\InPostBuySdk\Dto\Offer\PriceDto(
             $gross['amount'],
             $gross['currency'],
             $price['taxRateInfo']
         );
-        return new \malpka32\InPostBuySdk\Dto\OfferDto(
+        return new \malpka32\InPostBuySdk\Dto\Offer\OfferDto(
             $offer['externalId'],
             $productDto,
             $stockDto,

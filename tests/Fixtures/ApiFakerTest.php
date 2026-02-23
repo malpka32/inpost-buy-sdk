@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests\Fixtures;
 
-use malpka32\InPostBuySdk\Mapper\CategoryResponseMapper;
-use malpka32\InPostBuySdk\Mapper\DimensionMapper;
-use malpka32\InPostBuySdk\Mapper\OfferResponseMapper;
-use malpka32\InPostBuySdk\Mapper\OrderResponseMapper;
-use malpka32\InPostBuySdk\Mapper\AttributeValueMapper;
+use malpka32\InPostBuySdk\Mapper\Category\CategoryCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferDtoMapper;
+use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,7 +24,7 @@ final class ApiFakerTest extends TestCase
 
     public function testCategoriesMapToCategoryCollection(): void
     {
-        $mapper = new CategoryResponseMapper();
+        $mapper = new CategoryCollectionMapper();
         for ($i = 0; $i < 5; $i++) {
             $data = $this->faker->categoriesResponse('categories', 2);
             $result = $mapper->map($data);
@@ -37,7 +36,9 @@ final class ApiFakerTest extends TestCase
 
     public function testOffersListMapsToOfferCollection(): void
     {
-        $mapper = new OfferResponseMapper(new DimensionMapper(), new AttributeValueMapper());
+        $mapper = new OfferCollectionMapper(
+            new OfferDtoMapper()
+        );
         for ($i = 0; $i < 3; $i++) {
             $data = $this->faker->offersList(2);
             $result = $mapper->map($data);
@@ -47,7 +48,7 @@ final class ApiFakerTest extends TestCase
 
     public function testOrdersListMapsToOrderCollection(): void
     {
-        $mapper = new OrderResponseMapper();
+        $mapper = new OrderCollectionMapper();
         for ($i = 0; $i < 3; $i++) {
             $data = $this->faker->ordersList(2, 'items');
             $result = $mapper->map($data);

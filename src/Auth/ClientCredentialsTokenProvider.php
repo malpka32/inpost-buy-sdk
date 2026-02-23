@@ -6,7 +6,7 @@ namespace malpka32\InPostBuySdk\Auth;
 
 use malpka32\InPostBuySdk\Exception\ApiException;
 use malpka32\InPostBuySdk\Exception\ApiExceptionFactory;
-use malpka32\InPostBuySdk\Mapper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Repository;
 
 use malpka32\InPostBuySdk\Collection\OfferCollection;
-use malpka32\InPostBuySdk\Dto\OfferDto;
-use malpka32\InPostBuySdk\Dto\PriceDto;
-use malpka32\InPostBuySdk\Dto\ProductDto;
-use malpka32\InPostBuySdk\Dto\StockDto;
-use malpka32\InPostBuySdk\Mapper\AttributeValueMapper;
-use malpka32\InPostBuySdk\Mapper\DimensionMapper;
-use malpka32\InPostBuySdk\Mapper\OfferResponseMapper;
+use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\Response\OfferPutResultDto;
+use malpka32\InPostBuySdk\Dto\Offer\PriceDto;
+use malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto;
+use malpka32\InPostBuySdk\Dto\Offer\StockDto;
+use malpka32\InPostBuySdk\Mapper\Offer\Deposit\DepositLabelMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferDtoMapper;
 use malpka32\InPostBuySdk\Repository\OffersRepository;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use malpka32\InPostBuySdk\Tests\Fixtures\FakeOffersEndpoint;
@@ -31,16 +32,19 @@ final class OffersRepositoryTest extends TestCase
         $this->assertSame('Test Product', $result->offsetGet(0)->product->name);
     }
 
-    public function testPutOfferCreateReturnsId(): void
+    public function testPutOfferCreateReturnsResultDto(): void
     {
         $created = ApiMocks::offerCreatedResponse();
         $endpoint = new FakeOffersEndpoint(createResponse: $created);
         $repository = $this->createRepository($endpoint);
         $dto = $this->createMinimalOfferDto('NEW-SKU');
 
-        $id = $repository->putOffer($dto);
+        $result = $repository->putOffer($dto);
 
-        $this->assertSame('a1b2c3d4-e5f6-7890-abcd-ef1234567890', $id);
+        $this->assertInstanceOf(OfferPutResultDto::class, $result);
+        $this->assertSame('cmd-uuid-123', $result->commandId);
+        $this->assertSame('a1b2c3d4-e5f6-7890-abcd-ef1234567890', $result->offerId);
+        $this->assertSame('SKU-001', $result->externalId);
     }
 
     public function testPutOfferUpdateCallsUpdateEndpoint(): void
@@ -50,9 +54,11 @@ final class OffersRepositoryTest extends TestCase
         $repository = $this->createRepository($endpoint);
         $dto = $this->createMinimalOfferDto('UPD-SKU', inpostOfferId: 'existing-id');
 
-        $id = $repository->putOffer($dto);
+        $result = $repository->putOffer($dto);
 
-        $this->assertSame('a1b2c3d4-e5f6-7890-abcd-ef1234567890', $id);
+        $this->assertInstanceOf(OfferPutResultDto::class, $result);
+        $this->assertSame('a1b2c3d4-e5f6-7890-abcd-ef1234567890', $result->offerId);
+        $this->assertSame('SKU-001', $result->externalId);
     }
 
     public function testPutOffersEmptyReturnsEmptyCollection(): void
@@ -86,7 +92,10 @@ final class OffersRepositoryTest extends TestCase
     {
         return new OffersRepository(
             $endpoint,
-            new OfferResponseMapper(new DimensionMapper(), new AttributeValueMapper())
+            new OfferCollectionMapper(
+                new OfferDtoMapper()
+            ),
+            new DepositLabelMapper()
         );
     }
 

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests;
 
-use malpka32\InPostBuySdk\Mapper\CategoryResponseMapper;
+use malpka32\InPostBuySdk\Mapper\Category\CategoryCollectionMapper;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use PHPUnit\Framework\TestCase;
 
 final class CategoryResponseMapperTest extends TestCase
 {
-    private CategoryResponseMapper $mapper;
+    private CategoryCollectionMapper $mapper;
 
     protected function setUp(): void
     {
-        $this->mapper = new CategoryResponseMapper();
+        $this->mapper = new CategoryCollectionMapper();
     }
 
     public function testMapEmptyResponseReturnsEmptyCollection(): void
@@ -23,7 +23,7 @@ final class CategoryResponseMapperTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    /** OpenAPI-compliant response – Category list (no parentId in schema, flat). */
+    /** API response: {"categories": [{"id","name","parentId","parent_id"}, ...]}. */
     public function testMapCategoriesFromOpenApiResponse(): void
     {
         $data = ['categories' => ApiMocks::categoriesResponse()];
@@ -60,6 +60,29 @@ final class CategoryResponseMapperTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertSame('root-1', $result->offsetGet(0)->id);
         $this->assertSame('Root', $result->offsetGet(0)->name);
+        $this->assertNull($result->offsetGet(0)->parentId);
+        $this->assertSame('child-1', $result->offsetGet(1)->id);
+        $this->assertSame('Child', $result->offsetGet(1)->name);
         $this->assertSame('root-1', $result->offsetGet(1)->parentId);
+    }
+
+    /** Flat list – API returns categories as flat array, parent_id/parentId per item. */
+    public function testMapFlatCategoriesWithParentId(): void
+    {
+        $data = [
+            'categories' => [
+                ['id' => 'c1', 'name' => 'Dla dzieci', 'parentId' => null, 'parent_id' => null],
+                ['id' => 'c2', 'name' => 'Zabawki', 'parentId' => 'c1', 'parent_id' => 'c1'],
+            ],
+        ];
+        $result = $this->mapper->map($data);
+
+        $this->assertCount(2, $result);
+        $this->assertSame('c1', $result->offsetGet(0)->id);
+        $this->assertSame('Dla dzieci', $result->offsetGet(0)->name);
+        $this->assertNull($result->offsetGet(0)->parentId);
+        $this->assertSame('c2', $result->offsetGet(1)->id);
+        $this->assertSame('Zabawki', $result->offsetGet(1)->name);
+        $this->assertSame('c1', $result->offsetGet(1)->parentId);
     }
 }

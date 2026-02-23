@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Collection;
 
-use malpka32\InPostBuySdk\Dto\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use Ramsey\Collection\AbstractCollection;
 
 /**
@@ -16,7 +16,7 @@ final class OfferCollection extends AbstractCollection
 {
     public function getType(): string
     {
-        return OfferDto::class;
+        return \malpka32\InPostBuySdk\Dto\Offer\OfferDto::class;
     }
 
     /**

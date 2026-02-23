@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests;
 
-use malpka32\InPostBuySdk\Mapper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
 final class ArrayHelperTest extends TestCase

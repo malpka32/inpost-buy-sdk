@@ -11,8 +11,7 @@ namespace malpka32\InPostBuySdk\Tests\Fixtures;
 final class ApiMocks
 {
     /**
-     * GET /v1/categories – category list (schema: Categories, array of Category).
-     * Category: id, leaf, name, doesNotRequireGpsrInfo, description?, children?
+     * GET /v1/categories – flat category list (API: {"categories": [{"id","name","parentId","parent_id"}, ...]}).
      *
      * @return array<int, array<string, mixed>>
      */
@@ -21,17 +20,15 @@ final class ApiMocks
         return [
             [
                 'id' => '67909821-cc25-45ec-80ce-5ac4f2f01032',
-                'leaf' => false,
                 'name' => 'Consumer Electronics',
-                'doesNotRequireGpsrInfo' => true,
-                'description' => 'TVs, Audio, Notebooks and other stuff.',
+                'parentId' => null,
+                'parent_id' => null,
             ],
             [
                 'id' => '7f3b0598-5fd7-4cf6-8385-6a7cd44a6d74',
-                'leaf' => false,
                 'name' => 'Health',
-                'doesNotRequireGpsrInfo' => true,
-                'description' => 'Health products and all products related to healthy life.',
+                'parentId' => null,
+                'parent_id' => null,
             ],
         ];
     }
@@ -47,16 +44,42 @@ final class ApiMocks
     }
 
     /**
-     * Response with "items" key (flattened, with parentId).
+     * Response with "categories" key, flat list with parent_id (matches real API shape).
      *
      * @return array<string, mixed>
      */
     public static function categoriesResponseItemsWithParentId(): array
     {
         return [
-            'items' => [
-                ['id' => 'root-1', 'name' => 'Root', 'parentId' => null],
-                ['id' => 'child-1', 'name' => 'Child', 'parent_id' => 'root-1'],
+            'categories' => [
+                ['id' => 'root-1', 'name' => 'Root', 'parentId' => null, 'parent_id' => null],
+                ['id' => 'child-1', 'name' => 'Child', 'parentId' => 'root-1', 'parent_id' => 'root-1'],
+            ],
+        ];
+    }
+
+    /**
+     * API tree format – root array with nested children (InPost GET /v1/categories response).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function categoriesTreeResponse(): array
+    {
+        return [
+            [
+                'id' => 'root-uuid',
+                'name' => 'Electronics',
+                'leaf' => false,
+                'doesNotRequireGpsrInfo' => true,
+                'children' => [
+                    [
+                        'id' => 'child-uuid',
+                        'name' => 'Phones',
+                        'leaf' => true,
+                        'doesNotRequireGpsrInfo' => true,
+                        'children' => [],
+                    ],
+                ],
             ],
         ];
     }
@@ -114,6 +137,40 @@ final class ApiMocks
                 'grossPrice' => ['amount' => 99.99, 'currency' => 'PLN'],
                 'taxRateInfo' => '23%',
             ],
+        ];
+    }
+
+    /**
+     * Offer with optional fields (model, superModel, shippingTime, postSale, features).
+     *
+     * @return array<string, mixed>
+     */
+    public static function offerWithOptionalFieldsPayload(): array
+    {
+        return [
+            'id' => 'offer-with-optional',
+            'status' => 'PUBLISHED',
+            'externalId' => 'EXT-OPT',
+            'product' => [
+                'name' => 'Prod z opcjami',
+                'description' => 'Opis',
+                'brand' => 'Brand',
+                'categoryId' => 'cat-uuid',
+                'sku' => 'SKU-OPT',
+                'model' => 'Model123',
+                'superModel' => 'SuperModel',
+                'manufacturerProductNumber' => 'MPN-001',
+                'attributes' => [],
+            ],
+            'stock' => ['quantity' => 5, 'unit' => 'UNIT'],
+            'price' => ['grossPrice' => ['amount' => 49.99, 'currency' => 'PLN'], 'taxRateInfo' => '23%'],
+            'shippingTime' => ['daysToShip' => 2],
+            'affiliationProductUrl' => 'https://shop.example.com/product',
+            'postSale' => [
+                'returnPolicy' => ['description' => 'Zwrot 14 dni'],
+                'complaintPolicy' => ['description' => 'Reklamacja 24m'],
+            ],
+            'features' => ['refundable' => true],
         ];
     }
 
@@ -252,6 +309,35 @@ final class ApiMocks
             'id' => 'attr-uuid',
             'values' => ['Value1', 'Value2'],
             'lang' => 'pl',
+        ];
+    }
+
+    /**
+     * GET Offer Attachments – list response (schema: page, data: Attachment[]).
+     *
+     * @return array<string, mixed>
+     */
+    public static function attachmentsListResponse(): array
+    {
+        return [
+            'page' => ['limit' => 10, 'offset' => 0, 'total' => 1],
+            'data' => [self::attachmentPayload()],
+        ];
+    }
+
+    /**
+     * Single Attachment (schema: id, name, attachmentType, createdAt, url).
+     *
+     * @return array<string, mixed>
+     */
+    public static function attachmentPayload(): array
+    {
+        return [
+            'id' => 'att-uuid-123',
+            'name' => 'product.jpg',
+            'attachmentType' => 'IMAGE',
+            'createdAt' => '2025-02-15T13:45:30',
+            'url' => 'https://example.com/api/attachments/product.jpg',
         ];
     }
 

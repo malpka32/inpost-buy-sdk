@@ -1,5 +1,6 @@
 /vendor/
 /src/make/
+/docs/
 /.cursor/
 /.phpunit.cache/
 /build/

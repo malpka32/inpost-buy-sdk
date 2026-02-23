@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests;
 
-use malpka32\InPostBuySdk\Mapper\OrderResponseMapper;
+use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use PHPUnit\Framework\TestCase;
 
 final class OrderResponseMapperTest extends TestCase
 {
-    private OrderResponseMapper $mapper;
+    private OrderCollectionMapper $mapper;
 
     protected function setUp(): void
     {
-        $this->mapper = new OrderResponseMapper();
+        $this->mapper = new OrderCollectionMapper();
     }
 
     public function testMapEmptyResponseReturnsEmptyCollection(): void

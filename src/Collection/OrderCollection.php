@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Collection;
 
-use malpka32\InPostBuySdk\Dto\OrderDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderDto;
 use Ramsey\Collection\AbstractCollection;
 
 /**
@@ -16,7 +16,7 @@ final class OrderCollection extends AbstractCollection
 {
     public function getType(): string
     {
-        return OrderDto::class;
+        return \malpka32\InPostBuySdk\Dto\Order\OrderDto::class;
     }
 
     /**

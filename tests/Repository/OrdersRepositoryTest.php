@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests\Repository;
 
-use malpka32\InPostBuySdk\Dto\OrderStatusDto;
-use malpka32\InPostBuySdk\Mapper\OrderResponseMapper;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
+use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
 use malpka32\InPostBuySdk\Repository\OrdersRepository;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use malpka32\InPostBuySdk\Tests\Fixtures\FakeOrdersEndpoint;
@@ -17,7 +17,7 @@ final class OrdersRepositoryTest extends TestCase
     {
         $data = ApiMocks::ordersListResponse();
         $endpoint = new FakeOrdersEndpoint(listResponse: $data);
-        $repository = new OrdersRepository($endpoint, new OrderResponseMapper());
+        $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $result = $repository->getOrders();
 
@@ -29,7 +29,7 @@ final class OrdersRepositoryTest extends TestCase
     {
         $order = ApiMocks::singleOrderPayload();
         $endpoint = new FakeOrdersEndpoint(getResponse: $order);
-        $repository = new OrdersRepository($endpoint, new OrderResponseMapper());
+        $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $result = $repository->getOrder('order-id');
 
@@ -40,7 +40,7 @@ final class OrdersRepositoryTest extends TestCase
     public function testGetOrderReturnsNullWhen404(): void
     {
         $endpoint = new FakeOrdersEndpoint(getResponse: null);
-        $repository = new OrdersRepository($endpoint, new OrderResponseMapper());
+        $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $result = $repository->getOrder('missing');
 
@@ -50,7 +50,7 @@ final class OrdersRepositoryTest extends TestCase
     public function testUpdateOrderStatusAccept(): void
     {
         $endpoint = new FakeOrdersEndpoint();
-        $repository = new OrdersRepository($endpoint, new OrderResponseMapper());
+        $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $repository->updateOrderStatus('ord-1', new OrderStatusDto(status: 'accept'));
         $this->addToAssertionCount(1);
@@ -59,7 +59,7 @@ final class OrdersRepositoryTest extends TestCase
     public function testUpdateOrderStatusRefuse(): void
     {
         $endpoint = new FakeOrdersEndpoint();
-        $repository = new OrdersRepository($endpoint, new OrderResponseMapper());
+        $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $repository->updateOrderStatus('ord-1', new OrderStatusDto(status: 'refused', comment: 'Too expensive'));
         $this->addToAssertionCount(1);
