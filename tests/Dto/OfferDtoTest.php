@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Dto;
 
 use malpka32\InPostBuySdk\Collection\AttributeValueCollection;
-use malpka32\InPostBuySdk\Dto\AttributeValueDto;
-use malpka32\InPostBuySdk\Dto\DimensionDto;
-use malpka32\InPostBuySdk\Dto\OfferDto;
-use malpka32\InPostBuySdk\Dto\PriceDto;
-use malpka32\InPostBuySdk\Dto\ProductDto;
-use malpka32\InPostBuySdk\Dto\StockDto;
+use malpka32\InPostBuySdk\Dto\Attribute\AttributeValueDto;
+use malpka32\InPostBuySdk\Dto\Offer\Deposit\DepositPositionDto;
+use malpka32\InPostBuySdk\Dto\Offer\Deposit\DepositTypeDto;
+use malpka32\InPostBuySdk\Dto\Offer\FeaturesDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\PostSaleDto;
+use malpka32\InPostBuySdk\Dto\Offer\PriceDto;
+use malpka32\InPostBuySdk\Dto\Offer\Product\DimensionDto;
+use malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto;
+use malpka32\InPostBuySdk\Dto\Offer\ShippingTimeDto;
+use malpka32\InPostBuySdk\Dto\Offer\StockDto;
 use PHPUnit\Framework\TestCase;
 
 final class OfferDtoTest extends TestCase
@@ -57,5 +62,37 @@ final class OfferDtoTest extends TestCase
         $this->assertSame('PAIR', $payload['stock']['unit']);
         $this->assertSame('EUR', $payload['price']['grossPrice']['currency']);
         $this->assertSame('8%', $payload['price']['taxRateInfo']);
+    }
+
+    public function testToArrayWithOptionalFields(): void
+    {
+        $product = new ProductDto('Prod', 'Desc', 'Brand', 'cat', model: 'Model X', superModel: 'Super');
+        $stock = new StockDto(1, 'UNIT');
+        $deposit = new DepositPositionDto(2, new DepositTypeDto('dep-uuid', 1.0, 'PLN'));
+        $price = new PriceDto(50.0, 'PLN', '23%', deposits: [$deposit]);
+        $dto = new OfferDto(
+            'ext-2',
+            $product,
+            $stock,
+            $price,
+            shippingTime: new ShippingTimeDto(3),
+            affiliationProductUrl: 'https://shop.example.com/prod',
+            postSale: new PostSaleDto('Return policy', 'Complaint policy'),
+            features: new FeaturesDto(refundable: false),
+        );
+
+        $payload = $dto->toArray();
+
+        $this->assertSame('Model X', $payload['product']['model']);
+        $this->assertSame('Super', $payload['product']['superModel']);
+        $this->assertArrayHasKey('deposits', $payload['price']);
+        $this->assertCount(1, $payload['price']['deposits']);
+        $this->assertSame(2, $payload['price']['deposits'][0]['quantity']);
+        $this->assertSame('dep-uuid', $payload['price']['deposits'][0]['depositType']['id']);
+        $this->assertSame(3, $payload['shippingTime']['daysToShip']);
+        $this->assertSame('https://shop.example.com/prod', $payload['affiliationProductUrl']);
+        $this->assertSame('Return policy', $payload['postSale']['returnPolicy']['description']);
+        $this->assertSame('Complaint policy', $payload['postSale']['complaintPolicy']['description']);
+        $this->assertFalse($payload['features']['refundable']);
     }
 }

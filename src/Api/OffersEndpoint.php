@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Api;
 
-use malpka32\InPostBuySdk\Mapper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use malpka32\InPostBuySdk\Transport\ApiTransport;
 use malpka32\InPostBuySdk\Transport\ResponseDecoder;
 
@@ -33,8 +33,8 @@ final class OffersEndpoint implements OffersEndpointInterface
     /**
      * List Offers – offer list with pagination.
      *
-     * @param list<string>|null $offerStatus Np. ['PENDING','PUBLISHED']
-     * @param list<string>|null $sort        Np. ['-updatedAt']
+     * @param list<string>|null $offerStatus e.g. ['PENDING','PUBLISHED']
+     * @param list<string>|null $sort        e.g. ['-updatedAt']
      * @return array<string, mixed> { page: { limit, offset, total }, data: OfferDetails[] }
      */
     public function list(?array $offerStatus = null, ?int $limit = null, ?int $offset = null, ?array $sort = null): array
@@ -90,12 +90,114 @@ final class OffersEndpoint implements OffersEndpointInterface
     }
 
     /**
+     * Get single Offer details.
+     *
+     * @return array<string, mixed> { metadata?, offer: Offer }
+     */
+    public function get(string $offerId): array
+    {
+        $response = $this->transport->request('GET', $this->baseUrl . $this->offersPath($offerId));
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
      * @param array<string, mixed> $payload
      * @return array<string, mixed>
      */
     public function update(string $offerId, array $payload): array
     {
         $response = $this->transport->request('PATCH', $this->baseUrl . $this->offersPath($offerId), $payload);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Close Offer (state → CLOSED). Returns CommandDetails.
+     *
+     * @return array<string, mixed> { commandId, status }
+     */
+    public function close(string $offerId): array
+    {
+        $response = $this->transport->request('POST', $this->baseUrl . $this->offersPath($offerId) . '/close');
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Reopen Offer. Returns CommandDetails.
+     *
+     * @return array<string, mixed> { commandId, status }
+     */
+    public function reopen(string $offerId): array
+    {
+        $response = $this->transport->request('POST', $this->baseUrl . $this->offersPath($offerId) . '/reopen');
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Get Offer command status.
+     *
+     * @return array<string, mixed> { commandId, status }
+     */
+    public function getCommandStatus(string $commandId): array
+    {
+        $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId))
+            . '/commands/' . rawurlencode($commandId);
+        $response = $this->transport->request('GET', $this->baseUrl . $path);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * List Offer events.
+     *
+     * @param list<string>|null $eventType
+     * @return array<string, mixed> { data: OfferEvent[] }
+     */
+    public function getEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): array
+    {
+        $params = array_filter([
+            'untilId' => $untilId,
+            'eventType' => $eventType,
+            'limit' => $limit,
+        ], fn ($v) => $v !== null);
+        $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId)) . '/events';
+        $url = $this->baseUrl . $path;
+        if ($params !== []) {
+            $url .= '?' . self::buildQueryString($params);
+        }
+        $response = $this->transport->request('GET', $url);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Hint – product info, GPSR info, category mapping (by ean, mpn, name).
+     *
+     * @return array<string, mixed> { page, data: ProductHint[] }
+     */
+    public function getHint(?string $ean = null, ?string $mpn = null, ?string $name = null, ?int $limit = null, ?int $offset = null): array
+    {
+        $params = array_filter([
+            'ean' => $ean,
+            'mpn' => $mpn,
+            'name' => $name,
+            'limit' => $limit,
+            'offset' => $offset,
+        ], fn ($v) => $v !== null);
+        $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId)) . '/hint';
+        $url = $this->baseUrl . $path;
+        if ($params !== []) {
+            $url .= '?' . http_build_query($params);
+        }
+        $response = $this->transport->request('GET', $url);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * List Deposit Types (global, no orgId).
+     *
+     * @return array<string, mixed> { data: DepositLabel[] }
+     */
+    public function getDepositTypes(): array
+    {
+        $response = $this->transport->request('GET', $this->baseUrl . '/v1/offers/deposit-types');
         return $this->responseDecoder->decodeToArray($response);
     }
 

@@ -2,3 +2,5 @@ services:
   test:
     build: .
     command: test
+    volumes:
+      - ./.env:/app/.env

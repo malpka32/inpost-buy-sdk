@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Collection;
 
-use malpka32\InPostBuySdk\Dto\AttributeValueDto;
+use malpka32\InPostBuySdk\Dto\Attribute\AttributeValueDto;
 use Ramsey\Collection\AbstractCollection;
 
 /**
- * Collection of attribute values.
+ * Collection of attribute values. Pure container; building from API is done by AttributeValueCollectionMapper.
  *
  * @extends AbstractCollection<AttributeValueDto>
  */

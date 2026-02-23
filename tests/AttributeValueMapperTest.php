@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests;
 
-use malpka32\InPostBuySdk\Mapper\AttributeValueMapper;
+use malpka32\InPostBuySdk\Mapper\Attribute\AttributeValueCollectionMapper;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeValueMapperTest extends TestCase
 {
-    private AttributeValueMapper $mapper;
+    private AttributeValueCollectionMapper $mapper;
 
     protected function setUp(): void
     {
-        $this->mapper = new AttributeValueMapper();
+        $this->mapper = new AttributeValueCollectionMapper();
     }
 
-    public function testMapNullReturnsEmptyCollection(): void
-    {
-        $result = $this->mapper->map(null);
-        $this->assertCount(0, $result);
-    }
-
-    public function testMapEmptyArrayReturnsEmptyCollection(): void
+    public function testMapEmptySourceReturnsEmptyCollection(): void
     {
         $result = $this->mapper->map([]);
         $this->assertCount(0, $result);

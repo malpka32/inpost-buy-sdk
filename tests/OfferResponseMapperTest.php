@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests;
 
-use malpka32\InPostBuySdk\Mapper\AttributeValueMapper;
-use malpka32\InPostBuySdk\Mapper\DimensionMapper;
-use malpka32\InPostBuySdk\Mapper\OfferResponseMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferDtoMapper;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use PHPUnit\Framework\TestCase;
 
 final class OfferResponseMapperTest extends TestCase
 {
-    private OfferResponseMapper $mapper;
+    private OfferCollectionMapper $mapper;
 
     protected function setUp(): void
     {
-        $this->mapper = new OfferResponseMapper(
-            new DimensionMapper(),
-            new AttributeValueMapper()
+        $this->mapper = new OfferCollectionMapper(
+            new OfferDtoMapper()
         );
     }
 
@@ -62,5 +60,25 @@ final class OfferResponseMapperTest extends TestCase
         $data = ['data' => [ApiMocks::singleOfferPayload()]];
         $result = $this->mapper->map($data);
         $this->assertCount(1, $result);
+    }
+
+    public function testMapItemWithOptionalFields(): void
+    {
+        $payload = ApiMocks::offerWithOptionalFieldsPayload();
+        $dto = $this->mapper->mapItem($payload);
+
+        $this->assertSame('offer-with-optional', $dto->inpostOfferId);
+        $this->assertSame('Prod z opcjami', $dto->product->name);
+        $this->assertSame('Model123', $dto->product->model);
+        $this->assertSame('SuperModel', $dto->product->superModel);
+        $this->assertSame('MPN-001', $dto->product->manufacturerProductNumber);
+        $this->assertNotNull($dto->shippingTime);
+        $this->assertSame(2, $dto->shippingTime->daysToShip);
+        $this->assertSame('https://shop.example.com/product', $dto->affiliationProductUrl);
+        $this->assertNotNull($dto->postSale);
+        $this->assertSame('Zwrot 14 dni', $dto->postSale->returnPolicyDescription);
+        $this->assertSame('Reklamacja 24m', $dto->postSale->complaintPolicyDescription);
+        $this->assertNotNull($dto->features);
+        $this->assertTrue($dto->features->refundable);
     }
 }

@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace malpka32\InPostBuySdk\Mapper\Offer\Deposit;
+
+use malpka32\InPostBuySdk\Dto\Offer\Deposit\DepositTypeDto;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
+use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
+
+/**
+ * @implements ItemMapperInterface<DepositTypeDto>
+ */
+final class DepositTypeMapper implements ItemMapperInterface
+{
+    public function canProcess(array $item): bool
+    {
+        return true;
+    }
+
+    public function mapItem(mixed $item): DepositTypeDto
+    {
+        $itemArr = is_array($item) ? $item : [];
+        /** @var array<string, mixed> $itemArr */
+        $priceRaw = $itemArr['price'] ?? null;
+        $price = is_array($priceRaw) ? $priceRaw : [];
+        /** @var array<string, mixed> $price */
+
+        return new DepositTypeDto(
+            id: ArrayHelper::asString(ArrayHelper::get($itemArr, 'id') ?? ''),
+            amount: ArrayHelper::asFloat(ArrayHelper::get($price, 'amount') ?? 0.0),
+            currency: ArrayHelper::asString(ArrayHelper::get($price, 'currency') ?? 'PLN'),
+        );
+    }
+}

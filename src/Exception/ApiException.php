@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Exception;
 
-use malpka32\InPostBuySdk\Dto\ErrorResponseDto;
+use malpka32\InPostBuySdk\Dto\Common\ErrorResponseDto;
 
 /**
  * Base exception for InPost Buy API errors.

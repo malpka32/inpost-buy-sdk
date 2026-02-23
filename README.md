@@ -18,8 +18,10 @@ InPost Buy (inpsa) lets merchants integrate their product catalog and orders wit
 
 ## Features
 
-- **Categories** — fetch product category tree (read-only)
-- **Offers** — create single or batch offers with products, stock, and pricing
+- **Categories** — fetch product categories as a tree (read-only), with details and attributes
+- **Accept-Language** — set response language (Polish `pl` or English `en`) via `Language` enum
+- **Offers** — create single or batch offers with products, stock, and pricing; close/reopen; events; deposit types
+- **Offer attachments** — list, upload, download, delete attachments (images etc.)
 - **Orders** — list orders, fetch details, accept or refuse with status updates
 - **OAuth2** — client credentials grant (default) with in-memory caching; **OAuth2 PKCE** (Authorization Code flow) for merchant integrations (e.g. PrestaShop modules)
 - **Custom token provider** — use `InPostBuyClient::createWithTokenProvider()` with any `AccessTokenProviderInterface`
@@ -77,20 +79,50 @@ $orders = $client->getOrders(status: 'CREATED');
 
 ## Usage
 
+### Language (Accept-Language)
+
+API returns localized content (category names, error messages etc.). Set language via `Language` enum:
+
+```php
+use malpka32\InPostBuySdk\Config\Language;
+
+// Polish (default)
+$client = new InPostBuyClient(..., language: Language::Polish);
+
+// English
+$client = InPostBuyClient::createWithTokenProvider(..., language: Language::English);
+```
+
+Supported values: `Language::Polish` (pl), `Language::English` (en).
+
 ### Categories
 
-The category tree is read-only — you use it to assign products to categories when creating offers.
+Categories are returned as a tree (`CategoryTreeCollection` — each node has `id`, `name`, `parentId`, `children`).
 
 ```php
 $categories = $client->getCategories();
 
-foreach ($categories as $cat) {
+foreach ($categories as $node) {
     printf(
-        "ID: %s | Name: %s | Leaf: %s\n",
-        $cat->id,
-        $cat->name,
-        $cat->leaf ? 'yes' : 'no'
+        "ID: %s | Name: %s | Parent: %s | Children: %d\n",
+        $node->id,
+        $node->name,
+        $node->parentId ?? '-',
+        count($node->children)
     );
+}
+```
+
+You can iterate the tree recursively:
+
+```php
+$tree = $client->getCategories();  // one API call, returns CategoryTreeCollection
+
+foreach ($tree as $root) {
+    echo $root->name . "\n";
+    foreach ($root->children as $child) {
+        echo "  " . $child->name . "\n";
+    }
 }
 ```
 
@@ -100,13 +132,13 @@ An offer is built from nested DTOs: `ProductDto`, `StockDto`, `PriceDto`. Option
 
 ```php
 use malpka32\InPostBuySdk\Client\InPostBuyClient;
-use malpka32\InPostBuySdk\Dto\OfferDto;
-use malpka32\InPostBuySdk\Dto\ProductDto;
-use malpka32\InPostBuySdk\Dto\StockDto;
-use malpka32\InPostBuySdk\Dto\PriceDto;
-use malpka32\InPostBuySdk\Dto\DimensionDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\PriceDto;
+use malpka32\InPostBuySdk\Dto\Offer\Product\DimensionDto;
+use malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto;
+use malpka32\InPostBuySdk\Dto\Offer\StockDto;
 use malpka32\InPostBuySdk\Collection\AttributeValueCollection;
-use malpka32\InPostBuySdk\Dto\AttributeValueDto;
+use malpka32\InPostBuySdk\Dto\Attribute\AttributeValueDto;
 
 $product = new ProductDto(
     name: 'Cool T-Shirt',
@@ -129,8 +161,8 @@ $offer = new OfferDto(
     price: new PriceDto(amount: 99.99, currency: 'PLN', taxRateInfo: '23%')
 );
 
-$offerId = $client->putOffer($offer);
-echo "Created offer ID: $offerId\n";
+$result = $client->putOffer($offer);
+echo "Created offer ID: {$result->offerId}\n";
 ```
 
 ### Batch Offers
@@ -172,6 +204,7 @@ use malpka32\InPostBuySdk\Auth\PkceOAuth2Client;
 use malpka32\InPostBuySdk\Auth\PkceTokenProvider;
 use malpka32\InPostBuySdk\Client\InPostBuyClient;
 use malpka32\InPostBuySdk\Config\InPostBuyEndpoints;
+use malpka32\InPostBuySdk\Config\Language;
 
 // 1. Initiate authorization – redirect merchant to $result['authorize_url']
 $pkceClient = new PkceOAuth2Client($httpClient);
@@ -208,6 +241,7 @@ $client = InPostBuyClient::createWithTokenProvider(
     $tokenProvider,
     $organizationId,
     sandbox: true,
+    language: Language::English,  // optional: pl (default) or en
 );
 ```
 
@@ -305,7 +339,7 @@ CI runs on push/PR (PHP 8.1–8.3): code style (PSR-12), PHPStan, tests with cov
 
 ---
 
-## API Documentation
+## Documentation
 
 Official InPost Buy (inpsa) API docs: [inpsa-api-portal.inpost-group.com](https://inpsa-api-portal.inpost-group.com/)
 

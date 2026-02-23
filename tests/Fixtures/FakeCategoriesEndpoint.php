@@ -22,8 +22,19 @@ final class FakeCategoriesEndpoint implements CategoriesEndpointInterface
         $this->response = $response;
     }
 
-    public function fetch(): array
+    public function fetch(?string $categoryId = null, ?int $depth = null): array
     {
         return $this->response;
+    }
+
+    public function get(string $categoryId, ?int $depth = null): array
+    {
+        return $this->response;
+    }
+
+    public function getAttributes(string $categoryId): array
+    {
+        $data = $this->response['attributes'] ?? $this->response;
+        return is_array($data) ? array_values(array_filter($data, 'is_array')) : [];
     }
 }

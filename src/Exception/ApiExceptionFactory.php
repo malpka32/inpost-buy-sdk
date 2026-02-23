@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Exception;
 
-use malpka32\InPostBuySdk\Dto\ErrorDetailDto;
-use malpka32\InPostBuySdk\Dto\ErrorResponseDto;
-use malpka32\InPostBuySdk\Mapper\ArrayHelper;
+use malpka32\InPostBuySdk\Dto\Common\ErrorDetailDto;
+use malpka32\InPostBuySdk\Dto\Common\ErrorResponseDto;
+use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**

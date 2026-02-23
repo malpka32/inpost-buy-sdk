@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Transport;
 
 use malpka32\InPostBuySdk\Auth\AccessTokenProviderInterface;
+use malpka32\InPostBuySdk\Config\Language;
 use malpka32\InPostBuySdk\Exception\ApiExceptionFactory;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -18,6 +19,7 @@ final class ApiTransport
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly AccessTokenProviderInterface $tokenProvider,
+        private readonly Language $language = Language::Polish,
     ) {
     }
 
@@ -32,11 +34,38 @@ final class ApiTransport
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => $contentType,
+                'Accept-Language' => $this->language->value,
             ],
         ];
         if ($body !== null && in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
             $options['json'] = $body;
         }
+        $response = $this->httpClient->request($method, $url, $options);
+        if ($response->getStatusCode() >= 400) {
+            throw ApiExceptionFactory::fromResponse(
+                $response,
+                sprintf('API error: %s %s', $method, $url)
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Request with custom options (e.g. multipart for file upload).
+     * Merges Authorization header. Does not set Content-Type.
+     *
+     * @param array<string, mixed> $options
+     */
+    public function requestWithOptions(string $method, string $url, array $options = []): ResponseInterface
+    {
+        $token = $this->tokenProvider->getAccessToken();
+        $headers = $options['headers'] ?? [];
+        $headers = is_array($headers) ? $headers : [];
+        $options['headers'] = array_merge($headers, [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept-Language' => $this->language->value,
+        ]);
 
         $response = $this->httpClient->request($method, $url, $options);
         if ($response->getStatusCode() >= 400) {

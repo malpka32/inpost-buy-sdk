@@ -6,9 +6,9 @@ namespace malpka32\InPostBuySdk\Repository;
 
 use malpka32\InPostBuySdk\Api\OrdersEndpointInterface;
 use malpka32\InPostBuySdk\Collection\OrderCollection;
-use malpka32\InPostBuySdk\Dto\OrderDto;
-use malpka32\InPostBuySdk\Dto\OrderStatusDto;
-use malpka32\InPostBuySdk\Mapper\OrderResponseMapper;
+use malpka32\InPostBuySdk\Dto\Order\OrderDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
+use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
 
 /**
  * Orders repository – endpoint + mapping → DTO.
@@ -17,7 +17,7 @@ final class OrdersRepository
 {
     public function __construct(
         private readonly OrdersEndpointInterface $endpoint,
-        private readonly OrderResponseMapper $mapper,
+        private readonly OrderCollectionMapper $mapper,
     ) {
     }
 
