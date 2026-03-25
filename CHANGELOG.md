@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2026-03-25
+
+### Changed
+
+- Aligned changelog entries to reflect the real scope of tagged releases (`0.7.0`, `0.7.1`).
+- Bumped package version metadata to `0.7.2`.
+
+---
+
+## [0.7.1] - 2026-03-25
+
+### Changed
+
+- Fixed strict PHPStan issues in `Order` mappers (`missingType.generics`, array shape typing).
+- Tightened mapper constructor typing and array annotations without changing runtime behavior.
+- Applied formatting fixes required by `cs-check` for CI consistency.
+
+---
+
+## [0.7.0] - 2026-03-25
+
+### Added
+
+- Extended Orders API support:
+  - order list filters: `paymentStatus`, `limit`, `offset`, `sort`
+  - order command status endpoint
+  - order events endpoint
+- New typed Order DTO model:
+  - `OrderLineDto` and `OrderLineCollection`
+  - `OrderDeliveryParcelCollection` and `OrderPaymentCollection`
+  - new `Order/Core` DTOs and dedicated mappers
+- New enums for typed API usage:
+  - `OrderStatus`, `OrderPaymentStatus`, `OrderEventType`, `OrderUpdateStatus`
+  - `OfferStatus`, `OfferEventType`, `AttachmentType`
+  - shared `ListSort` for offers and orders list endpoints
+
+### Changed
+
+- Refactored Order mappers into `Order/Core` and `Order/Line` architecture.
+- `OrderDto` status is now strongly typed to `OrderStatus`.
+- Offer and Order filters/events are now enum-friendly across client, repository, and endpoint contracts.
+- README examples updated to enum-based usage.
+- Mapping normalized to documented OpenAPI camelCase fields.
+- Removed `.php-cs-fixer.cache` from repository tracking and ignored `composer.lock` for library workflow.
+
+---
+
 ## [0.6.0] - 2026-02-23
 
 ### Added
@@ -68,6 +115,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support section with buycoffee.to link
 
 
+[0.7.2]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.2
+[0.7.1]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.1
+[0.7.0]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.0
 [0.6.0]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.6.0
 [0.2.0]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.2.0
 [0.1.0]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.1.0
