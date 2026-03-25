@@ -23,9 +23,15 @@ final class OrderPaymentDetailsDtoMapper implements SingleItemMapperInterface
         if (!is_array($data)) {
             return null;
         }
+        /** @var array<string, mixed> $data */
         $selectedPaymentType = ArrayHelper::get($data, 'selectedPaymentType');
         $paymentsRaw = ArrayHelper::get($data, 'payments');
-        $payments = is_array($paymentsRaw) ? $this->paymentsMapper->map($paymentsRaw) : null;
+        if (is_array($paymentsRaw) && array_is_list($paymentsRaw)) {
+            /** @var list<mixed> $paymentsRaw */
+            $payments = $this->paymentsMapper->map($paymentsRaw);
+        } else {
+            $payments = null;
+        }
 
         return new OrderPaymentDetailsDto(
             selectedPaymentType: $selectedPaymentType === null ? null : ArrayHelper::asString($selectedPaymentType),

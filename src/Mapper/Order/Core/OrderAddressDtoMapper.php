@@ -18,6 +18,7 @@ final class OrderAddressDtoMapper implements SingleItemMapperInterface
         if (!is_array($data)) {
             return null;
         }
+        /** @var array<string, mixed> $data */
 
         $street = ArrayHelper::get($data, 'street');
         $city = ArrayHelper::get($data, 'city');

@@ -24,8 +24,6 @@ use malpka32\InPostBuySdk\Dto\Category\CategoryDto;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
-use malpka32\InPostBuySdk\Dto\Common\ListSort;
-use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferEventsResultDto;
@@ -265,8 +263,7 @@ final class InPostBuyClient implements InPostBuyClientInterface
         ?int $limit = null,
         ?int $offset = null,
         ?array $sort = null,
-    ): OrderCollection
-    {
+    ): OrderCollection {
         return $this->ordersRepository->getOrders($status, $paymentStatus, $limit, $offset, $sort);
     }
 

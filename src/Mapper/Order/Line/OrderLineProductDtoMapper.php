@@ -18,6 +18,7 @@ final class OrderLineProductDtoMapper implements SingleItemMapperInterface
         if (!is_array($data)) {
             return null;
         }
+        /** @var array<string, mixed> $data */
 
         $productId = ArrayHelper::get($data, 'productId');
         $name = ArrayHelper::get($data, 'name');

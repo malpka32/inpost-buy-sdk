@@ -39,8 +39,7 @@ final class FakeOrdersEndpoint implements OrdersEndpointInterface
         ?int $limit = null,
         ?int $offset = null,
         ?array $sort = null,
-    ): array
-    {
+    ): array {
         /** @var list<ListSort|string>|null $sort */
         $this->lastListCall = [
             'status' => $status,

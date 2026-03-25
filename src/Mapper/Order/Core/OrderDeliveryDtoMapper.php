@@ -19,8 +19,8 @@ use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 final class OrderDeliveryDtoMapper implements SingleItemMapperInterface
 {
     public function __construct(
-        private readonly SingleItemMapperInterface $addressMapper = new OrderAddressDtoMapper(),
-        private readonly SingleItemMapperInterface $moneyMapper = new OrderMoneyDtoMapper(),
+        private readonly OrderAddressDtoMapper $addressMapper = new OrderAddressDtoMapper(),
+        private readonly OrderMoneyDtoMapper $moneyMapper = new OrderMoneyDtoMapper(),
         /** @var ItemMapperInterface<OrderDeliveryParcelDto> */
         private readonly ItemMapperInterface $parcelMapper = new OrderDeliveryParcelDtoMapper(),
     ) {
@@ -31,6 +31,7 @@ final class OrderDeliveryDtoMapper implements SingleItemMapperInterface
         if (!is_array($data)) {
             return null;
         }
+        /** @var array<string, mixed> $data */
 
         $deliveryType = ArrayHelper::get($data, 'deliveryType');
         $name = ArrayHelper::get($data, 'name');

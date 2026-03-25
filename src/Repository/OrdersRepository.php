@@ -36,8 +36,7 @@ final class OrdersRepository
         ?int $limit = null,
         ?int $offset = null,
         ?array $sort = null,
-    ): OrderCollection
-    {
+    ): OrderCollection {
         $data = $this->endpoint->list($status, $paymentStatus, $limit, $offset, $sort);
         return $this->mapper->map($data);
     }

@@ -13,7 +13,6 @@ use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderPaymentDetailsDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
-use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 use malpka32\InPostBuySdk\Mapper\Order\Line\OrderLineCollectionMapper;
 
 /**
@@ -23,11 +22,11 @@ final class OrderDtoMapper implements ItemMapperInterface
 {
     public function __construct(
         private readonly OrderLineCollectionMapper $orderLineCollectionMapper = new OrderLineCollectionMapper(),
-        private readonly SingleItemMapperInterface $customerMapper = new OrderCustomerDtoMapper(),
-        private readonly SingleItemMapperInterface $invoiceMapper = new OrderInvoiceDtoMapper(),
-        private readonly SingleItemMapperInterface $deliveryMapper = new OrderDeliveryDtoMapper(),
-        private readonly SingleItemMapperInterface $moneyMapper = new OrderMoneyDtoMapper(),
-        private readonly SingleItemMapperInterface $paymentDetailsMapper = new OrderPaymentDetailsDtoMapper(),
+        private readonly OrderCustomerDtoMapper $customerMapper = new OrderCustomerDtoMapper(),
+        private readonly OrderInvoiceDtoMapper $invoiceMapper = new OrderInvoiceDtoMapper(),
+        private readonly OrderDeliveryDtoMapper $deliveryMapper = new OrderDeliveryDtoMapper(),
+        private readonly OrderMoneyDtoMapper $moneyMapper = new OrderMoneyDtoMapper(),
+        private readonly OrderPaymentDetailsDtoMapper $paymentDetailsMapper = new OrderPaymentDetailsDtoMapper(),
     ) {
     }
 

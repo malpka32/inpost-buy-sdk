@@ -8,8 +8,8 @@ use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
 use malpka32\InPostBuySdk\Dto\Order\Line\OrderLineOfferDto;
 use malpka32\InPostBuySdk\Dto\Order\Line\OrderLineProductDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
-use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 use malpka32\InPostBuySdk\Mapper\Order\Core\OrderMoneyDtoMapper;
+use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 
 /**
  * @implements SingleItemMapperInterface<OrderLineOfferDto>
@@ -17,8 +17,8 @@ use malpka32\InPostBuySdk\Mapper\Order\Core\OrderMoneyDtoMapper;
 final class OrderLineOfferDtoMapper implements SingleItemMapperInterface
 {
     public function __construct(
-        private readonly SingleItemMapperInterface $productMapper = new OrderLineProductDtoMapper(),
-        private readonly SingleItemMapperInterface $moneyMapper = new OrderMoneyDtoMapper(),
+        private readonly OrderLineProductDtoMapper $productMapper = new OrderLineProductDtoMapper(),
+        private readonly OrderMoneyDtoMapper $moneyMapper = new OrderMoneyDtoMapper(),
     ) {
     }
 
@@ -27,6 +27,7 @@ final class OrderLineOfferDtoMapper implements SingleItemMapperInterface
         if (!is_array($data)) {
             return null;
         }
+        /** @var array<string, mixed> $data */
 
         $offerId = ArrayHelper::get($data, 'offerId');
         $externalId = ArrayHelper::get($data, 'externalId');

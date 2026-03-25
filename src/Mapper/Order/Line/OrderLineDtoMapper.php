@@ -8,7 +8,6 @@ use malpka32\InPostBuySdk\Dto\Order\Line\OrderLineDto;
 use malpka32\InPostBuySdk\Dto\Order\Line\OrderLineOfferDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
-use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 
 /**
  * @implements ItemMapperInterface<OrderLineDto>
@@ -16,7 +15,7 @@ use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 final class OrderLineDtoMapper implements ItemMapperInterface
 {
     public function __construct(
-        private readonly SingleItemMapperInterface $offerMapper = new OrderLineOfferDtoMapper(),
+        private readonly OrderLineOfferDtoMapper $offerMapper = new OrderLineOfferDtoMapper(),
     ) {
     }
 

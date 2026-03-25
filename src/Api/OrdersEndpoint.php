@@ -43,8 +43,7 @@ final class OrdersEndpoint implements OrdersEndpointInterface
         ?int $limit = null,
         ?int $offset = null,
         ?array $sort = null,
-    ): array
-    {
+    ): array {
         $statusParam = self::normalizeBackedEnumOrString($status);
         $paymentStatusParam = self::normalizeBackedEnumOrString($paymentStatus);
         $sortParam = self::normalizeStringList($sort);
