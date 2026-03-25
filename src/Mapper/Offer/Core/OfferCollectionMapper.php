@@ -25,7 +25,7 @@ final class OfferCollectionMapper implements CollectionMapperInterface, ItemMapp
     public function map(array $data): OfferCollection
     {
         $collection = new OfferCollection();
-        $list = ArrayHelper::getList($data, ['data', 'items', 'offers']);
+        $list = ArrayHelper::getList($data, ['data']);
         foreach ($list as $item) {
             if ($this->canProcess($item)) {
                 $collection->add($this->mapItem(ArrayHelper::extractOffer($item)));

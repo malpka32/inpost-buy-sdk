@@ -42,8 +42,8 @@ final class OfferDto
         public ?PostSaleDto $postSale = null,
         /** Offer features (e.g. refundable). */
         public ?FeaturesDto $features = null,
-        /** Offer status from InPost API (e.g. PENDING, PUBLISHED, REJECTED – only in response). */
-        public ?string $status = null,
+        /** Offer status from InPost API (only in response). */
+        public ?OfferStatus $status = null,
     ) {
     }
 

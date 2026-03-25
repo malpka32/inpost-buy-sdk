@@ -6,6 +6,7 @@ namespace malpka32\InPostBuySdk\Repository;
 
 use malpka32\InPostBuySdk\Api\OfferAttachmentsEndpointInterface;
 use malpka32\InPostBuySdk\Collection\AttachmentCollection;
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
 use malpka32\InPostBuySdk\Mapper\Attachment\AttachmentMapper;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -27,7 +28,7 @@ final class OfferAttachmentsRepository
     /**
      * @param resource|\SplFileInfo $file
      */
-    public function createAttachment(string $offerId, string $attachmentType, mixed $file): CommandStatusDto
+    public function createAttachment(string $offerId, AttachmentType|string $attachmentType, mixed $file): CommandStatusDto
     {
         $data = $this->endpoint->create($offerId, $attachmentType, $file);
         return CommandStatusDto::fromArray($data);

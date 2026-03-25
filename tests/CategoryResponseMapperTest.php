@@ -23,7 +23,7 @@ final class CategoryResponseMapperTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    /** API response: {"categories": [{"id","name","parentId","parent_id"}, ...]}. */
+    /** API response: {"categories": [{"id","name","parentId"}, ...]}. */
     public function testMapCategoriesFromOpenApiResponse(): void
     {
         $data = ['categories' => ApiMocks::categoriesResponse()];
@@ -36,7 +36,7 @@ final class CategoryResponseMapperTest extends TestCase
         $this->assertNull($first->parentId);
     }
 
-    public function testMapCategoriesFromItemsKey(): void
+    public function testMapCategoriesIgnoresUndocumentedItemsKey(): void
     {
         $data = [
             'items' => [
@@ -46,10 +46,7 @@ final class CategoryResponseMapperTest extends TestCase
         ];
         $result = $this->mapper->map($data);
 
-        $this->assertCount(2, $result);
-        $this->assertSame('cat-1', $result->offsetGet(0)->id);
-        $this->assertSame('cat-2', $result->offsetGet(1)->id);
-        $this->assertSame('cat-1', $result->offsetGet(1)->parentId);
+        $this->assertCount(0, $result);
     }
 
     public function testMapCategoriesFromCategoriesKeyWithParentId(): void
@@ -66,13 +63,13 @@ final class CategoryResponseMapperTest extends TestCase
         $this->assertSame('root-1', $result->offsetGet(1)->parentId);
     }
 
-    /** Flat list – API returns categories as flat array, parent_id/parentId per item. */
+    /** Flat list – API returns categories as flat array with parentId. */
     public function testMapFlatCategoriesWithParentId(): void
     {
         $data = [
             'categories' => [
-                ['id' => 'c1', 'name' => 'Dla dzieci', 'parentId' => null, 'parent_id' => null],
-                ['id' => 'c2', 'name' => 'Zabawki', 'parentId' => 'c1', 'parent_id' => 'c1'],
+                ['id' => 'c1', 'name' => 'Dla dzieci', 'parentId' => null],
+                ['id' => 'c2', 'name' => 'Zabawki', 'parentId' => 'c1'],
             ],
         ];
         $result = $this->mapper->map($data);

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Repository;
 
 use malpka32\InPostBuySdk\Collection\OfferCollection;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferPutResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\PriceDto;
@@ -31,6 +34,25 @@ final class OffersRepositoryTest extends TestCase
 
         $this->assertCount(1, $result);
         $this->assertSame('Test Product', $result->offsetGet(0)->product->name);
+    }
+
+    public function testGetOffersPassesSortEnumsToEndpoint(): void
+    {
+        $endpoint = new FakeOffersEndpoint(listResponse: ApiMocks::offersListResponse());
+        $repository = $this->createRepository($endpoint);
+
+        $repository->getOffers(
+            offerStatus: [OfferStatus::PENDING, OfferStatus::PUBLISHED],
+            limit: 20,
+            offset: 10,
+            sort: [ListSort::UPDATED_AT_DESC, ListSort::STATUS_ASC],
+        );
+
+        $this->assertNotNull($endpoint->lastListCall);
+        $this->assertSame([OfferStatus::PENDING, OfferStatus::PUBLISHED], $endpoint->lastListCall['offerStatus']);
+        $this->assertSame(20, $endpoint->lastListCall['limit']);
+        $this->assertSame(10, $endpoint->lastListCall['offset']);
+        $this->assertSame([ListSort::UPDATED_AT_DESC, ListSort::STATUS_ASC], $endpoint->lastListCall['sort']);
     }
 
     public function testPutOfferCreateReturnsResultDto(): void
@@ -87,6 +109,16 @@ final class OffersRepositoryTest extends TestCase
         $this->assertCount(2, $ids);
         $this->assertSame('offer-uuid-1', $ids->offsetGet(0)->offerId);
         $this->assertSame('offer-uuid-2', $ids->offsetGet(1)->offerId);
+    }
+
+    public function testGetOfferEventsAcceptsEnumEventTypes(): void
+    {
+        $endpoint = new FakeOffersEndpoint();
+        $repository = $this->createRepository($endpoint);
+
+        $result = $repository->getOfferEvents(eventType: [OfferEventType::CREATED, OfferEventType::UPDATED], limit: 50);
+
+        $this->assertSame([], $result->getEvents());
     }
 
     private function createRepository(\malpka32\InPostBuySdk\Api\OffersEndpointInterface $endpoint): OffersRepository

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Api;
 
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Transport\ApiTransport;
 use malpka32\InPostBuySdk\Transport\ResponseDecoder;
 
@@ -33,17 +36,19 @@ final class OffersEndpoint implements OffersEndpointInterface
     /**
      * List Offers – offer list with pagination.
      *
-     * @param list<string>|null $offerStatus e.g. ['PENDING','PUBLISHED']
-     * @param list<string>|null $sort        e.g. ['-updatedAt']
+     * @param list<OfferStatus|string>|null $offerStatus e.g. [OfferStatus::PENDING]
+     * @param list<ListSort|string>|null   $sort        e.g. [ListSort::UPDATED_AT_DESC]
      * @return array<string, mixed> { page: { limit, offset, total }, data: OfferDetails[] }
      */
     public function list(?array $offerStatus = null, ?int $limit = null, ?int $offset = null, ?array $sort = null): array
     {
+        $offerStatusParam = self::normalizeStringList($offerStatus);
+        $sortParam = self::normalizeStringList($sort);
         $params = array_filter([
-            'offerStatus' => $offerStatus,
+            'offerStatus' => $offerStatusParam,
             'limit' => $limit,
             'offset' => $offset,
-            'sort' => $sort,
+            'sort' => $sortParam,
         ], fn ($v) => $v !== null);
 
         $url = $this->baseUrl . $this->offersPath();
@@ -148,14 +153,15 @@ final class OffersEndpoint implements OffersEndpointInterface
     /**
      * List Offer events.
      *
-     * @param list<string>|null $eventType
+     * @param list<OfferEventType|string>|null $eventType
      * @return array<string, mixed> { data: OfferEvent[] }
      */
     public function getEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): array
     {
+        $eventTypeParam = self::normalizeStringList($eventType);
         $params = array_filter([
             'untilId' => $untilId,
-            'eventType' => $eventType,
+            'eventType' => $eventTypeParam,
             'limit' => $limit,
         ], fn ($v) => $v !== null);
         $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId)) . '/events';
@@ -199,6 +205,31 @@ final class OffersEndpoint implements OffersEndpointInterface
     {
         $response = $this->transport->request('GET', $this->baseUrl . '/v1/offers/deposit-types');
         return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * @param list<\BackedEnum|string>|null $values
+     * @return list<string>|null
+     */
+    private static function normalizeStringList(?array $values): ?array
+    {
+        if ($values === null) {
+            return null;
+        }
+
+        $normalized = [];
+        foreach ($values as $value) {
+            if ($value instanceof \BackedEnum) {
+                $value = $value->value;
+            }
+            $asString = ArrayHelper::asString($value);
+            if ($asString === '') {
+                continue;
+            }
+            $normalized[] = $asString;
+        }
+
+        return $normalized === [] ? null : $normalized;
     }
 
     /**

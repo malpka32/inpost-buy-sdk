@@ -15,11 +15,20 @@ use malpka32\InPostBuySdk\Dto\Category\CategoryDetailedDto;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDto;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferEventsResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferHintResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferPutResultDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderEventType;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentStatus;
 use malpka32\InPostBuySdk\Dto\Order\OrderDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
+use malpka32\InPostBuySdk\Dto\Order\Command\OrderCommandStatusDto;
+use malpka32\InPostBuySdk\Dto\Order\Response\OrderEventsResultDto;
 use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -55,8 +64,8 @@ interface InPostBuyClientInterface
     /**
      * Fetches offer list (List Offers).
      *
-     * @param list<string>|null $offerStatus e.g. ['PENDING','PUBLISHED']
-     * @param list<string>|null $sort        e.g. ['-updatedAt']
+     * @param list<OfferStatus|string>|null $offerStatus e.g. [OfferStatus::PENDING]
+     * @param list<ListSort|string>|null   $sort        e.g. [ListSort::UPDATED_AT_DESC]
      */
     public function getOffers(
         ?array $offerStatus = null,
@@ -105,7 +114,7 @@ interface InPostBuyClientInterface
     /**
      * Gets offer events.
      *
-     * @param list<string>|null $eventType
+     * @param list<OfferEventType|string>|null $eventType
      */
     public function getOfferEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OfferEventsResultDto;
 
@@ -124,7 +133,7 @@ interface InPostBuyClientInterface
     /**
      * @param resource|\SplFileInfo $file
      */
-    public function createOfferAttachment(string $offerId, string $attachmentType, mixed $file): CommandStatusDto;
+    public function createOfferAttachment(string $offerId, AttachmentType|string $attachmentType, mixed $file): CommandStatusDto;
 
     public function downloadOfferAttachment(string $offerId, string $attachmentId): ResponseInterface;
 
@@ -132,8 +141,16 @@ interface InPostBuyClientInterface
 
     /**
      * Fetches orders list (with optional status filter).
+     *
+     * @param list<ListSort|string>|null $sort
      */
-    public function getOrders(?string $status = null): OrderCollection;
+    public function getOrders(
+        OrderStatus|string|null $status = null,
+        OrderPaymentStatus|string|null $paymentStatus = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $sort = null,
+    ): OrderCollection;
 
     /**
      * Fetches single order by InPost ID.
@@ -144,4 +161,16 @@ interface InPostBuyClientInterface
      * Updates order status in InPost (accept / refuse).
      */
     public function updateOrderStatus(string $inpostOrderId, OrderStatusDto $status): void;
+
+    /**
+     * Gets order command status.
+     */
+    public function getOrderCommandStatus(string $commandId): OrderCommandStatusDto;
+
+    /**
+     * Gets order events.
+     *
+     * @param list<OrderEventType|string>|null $eventType
+     */
+    public function getOrderEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OrderEventsResultDto;
 }

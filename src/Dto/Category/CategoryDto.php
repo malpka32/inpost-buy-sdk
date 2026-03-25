@@ -6,7 +6,7 @@ namespace malpka32\InPostBuySdk\Dto\Category;
 
 /**
  * Category – flat representation matching API response.
- * API returns: id, name, parentId, parent_id (flat list under "categories").
+ * API returns: id, name, parentId (flat list under "categories").
  */
 final class CategoryDto
 {

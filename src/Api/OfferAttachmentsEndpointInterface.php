@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Api;
 
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 interface OfferAttachmentsEndpointInterface
@@ -17,7 +18,7 @@ interface OfferAttachmentsEndpointInterface
      * @param resource|\SplFileInfo $file
      * @return array<string, mixed>
      */
-    public function create(string $offerId, string $attachmentType, mixed $file): array;
+    public function create(string $offerId, AttachmentType|string $attachmentType, mixed $file): array;
 
     public function download(string $offerId, string $attachmentId): ResponseInterface;
 

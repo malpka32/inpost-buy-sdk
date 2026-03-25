@@ -8,6 +8,9 @@ use malpka32\InPostBuySdk\Api\OffersEndpointInterface;
 use malpka32\InPostBuySdk\Collection\DepositLabelCollection;
 use malpka32\InPostBuySdk\Collection\OfferCollection;
 use malpka32\InPostBuySdk\Collection\OfferPutResultCollection;
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
@@ -35,8 +38,8 @@ final class OffersRepository
     /**
      * List Offers – fetches offer list with optional pagination and filters.
      *
-     * @param list<string>|null $offerStatus e.g. ['PENDING','PUBLISHED','REJECTED','CLOSED','SOLDOUT']
-     * @param list<string>|null $sort        e.g. ['-updatedAt','createdAt']
+     * @param list<OfferStatus|string>|null $offerStatus e.g. [OfferStatus::PENDING]
+     * @param list<ListSort|string>|null   $sort        e.g. [ListSort::UPDATED_AT_DESC]
      */
     public function getOffers(
         ?array $offerStatus = null,
@@ -142,7 +145,7 @@ final class OffersRepository
     }
 
     /**
-     * @param list<string>|null $eventType
+     * @param list<OfferEventType|string>|null $eventType
      */
     public function getOfferEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OfferEventsResultDto
     {

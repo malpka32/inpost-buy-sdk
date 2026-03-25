@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Api;
 
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
+
 /**
  * Offers endpoint contract – enables testing with fake data.
  */
 interface OffersEndpointInterface
 {
     /**
-     * @param list<string>|null $offerStatus
-     * @param list<string>|null $sort
+     * @param list<OfferStatus|string>|null $offerStatus
+     * @param list<ListSort|string>|null   $sort
      * @return array<string, mixed>
      */
     public function list(?array $offerStatus = null, ?int $limit = null, ?int $offset = null, ?array $sort = null): array;
@@ -55,7 +59,7 @@ interface OffersEndpointInterface
     public function getCommandStatus(string $commandId): array;
 
     /**
-     * @param list<string>|null $eventType
+     * @param list<OfferEventType|string>|null $eventType
      * @return array<string, mixed>
      */
     public function getEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): array;

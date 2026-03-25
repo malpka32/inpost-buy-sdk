@@ -6,9 +6,15 @@ namespace malpka32\InPostBuySdk\Repository;
 
 use malpka32\InPostBuySdk\Api\OrdersEndpointInterface;
 use malpka32\InPostBuySdk\Collection\OrderCollection;
+use malpka32\InPostBuySdk\Dto\Order\OrderEventType;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentStatus;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
+use malpka32\InPostBuySdk\Dto\Order\Command\OrderCommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Order\OrderDto;
+use malpka32\InPostBuySdk\Dto\Order\Response\OrderEventsResultDto;
 use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
-use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Order\Core\OrderCollectionMapper;
 
 /**
  * Orders repository – endpoint + mapping → DTO.
@@ -21,9 +27,18 @@ final class OrdersRepository
     ) {
     }
 
-    public function getOrders(?string $status = null): OrderCollection
+    /**
+     * @param list<ListSort|string>|null $sort
+     */
+    public function getOrders(
+        OrderStatus|string|null $status = null,
+        OrderPaymentStatus|string|null $paymentStatus = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $sort = null,
+    ): OrderCollection
     {
-        $data = $this->endpoint->list($status);
+        $data = $this->endpoint->list($status, $paymentStatus, $limit, $offset, $sort);
         return $this->mapper->map($data);
     }
 
@@ -44,5 +59,20 @@ final class OrdersRepository
         } elseif ($lower === 'refuse' || $lower === 'refused') {
             $this->endpoint->refuse($inpostOrderId, $status->comment ?? '');
         }
+    }
+
+    public function getOrderCommandStatus(string $commandId): OrderCommandStatusDto
+    {
+        $data = $this->endpoint->getCommandStatus($commandId);
+        return OrderCommandStatusDto::fromArray($data);
+    }
+
+    /**
+     * @param list<OrderEventType|string>|null $eventType
+     */
+    public function getOrderEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OrderEventsResultDto
+    {
+        $data = $this->endpoint->getEvents($untilId, $eventType, $limit);
+        return OrderEventsResultDto::fromArray($data);
     }
 }

@@ -23,11 +23,20 @@ use malpka32\InPostBuySdk\Dto\Category\CategoryDetailedDto;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDto;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferEventsResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferHintResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferPutResultDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderEventType;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentStatus;
+use malpka32\InPostBuySdk\Dto\Order\Command\OrderCommandStatusDto;
 use malpka32\InPostBuySdk\Dto\Order\OrderDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
+use malpka32\InPostBuySdk\Dto\Order\Response\OrderEventsResultDto;
 use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
 use malpka32\InPostBuySdk\Exception\ApiException;
 use malpka32\InPostBuySdk\Mapper\Attribute\AttributeDefinitionMapper;
@@ -45,7 +54,7 @@ use malpka32\InPostBuySdk\Mapper\Offer\Gpsr\OfferGpsrSingleMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\PostSale\OfferFeaturesSingleMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\PostSale\OfferPostSaleSingleMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\PostSale\OfferShippingTimeSingleMapper;
-use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Order\Core\OrderCollectionMapper;
 use malpka32\InPostBuySdk\Repository\CategoriesRepository;
 use malpka32\InPostBuySdk\Mapper\Attachment\AttachmentMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Deposit\DepositLabelMapper;
@@ -210,7 +219,7 @@ final class InPostBuyClient implements InPostBuyClientInterface
     }
 
     /**
-     * @param list<string>|null $eventType
+     * @param list<OfferEventType|string>|null $eventType
      */
     public function getOfferEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OfferEventsResultDto
     {
@@ -235,7 +244,7 @@ final class InPostBuyClient implements InPostBuyClientInterface
     /**
      * @param resource|\SplFileInfo $file
      */
-    public function createOfferAttachment(string $offerId, string $attachmentType, mixed $file): CommandStatusDto
+    public function createOfferAttachment(string $offerId, AttachmentType|string $attachmentType, mixed $file): CommandStatusDto
     {
         return $this->offerAttachmentsRepository->createAttachment($offerId, $attachmentType, $file);
     }
@@ -250,9 +259,15 @@ final class InPostBuyClient implements InPostBuyClientInterface
         $this->offerAttachmentsRepository->deleteAttachment($offerId, $attachmentId);
     }
 
-    public function getOrders(?string $status = null): OrderCollection
+    public function getOrders(
+        OrderStatus|string|null $status = null,
+        OrderPaymentStatus|string|null $paymentStatus = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?array $sort = null,
+    ): OrderCollection
     {
-        return $this->ordersRepository->getOrders($status);
+        return $this->ordersRepository->getOrders($status, $paymentStatus, $limit, $offset, $sort);
     }
 
     public function getOrder(string $inpostOrderId): ?OrderDto
@@ -263,5 +278,18 @@ final class InPostBuyClient implements InPostBuyClientInterface
     public function updateOrderStatus(string $inpostOrderId, OrderStatusDto $status): void
     {
         $this->ordersRepository->updateOrderStatus($inpostOrderId, $status);
+    }
+
+    public function getOrderCommandStatus(string $commandId): OrderCommandStatusDto
+    {
+        return $this->ordersRepository->getOrderCommandStatus($commandId);
+    }
+
+    /**
+     * @param list<OrderEventType|string>|null $eventType
+     */
+    public function getOrderEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): OrderEventsResultDto
+    {
+        return $this->ordersRepository->getOrderEvents($untilId, $eventType, $limit);
     }
 }

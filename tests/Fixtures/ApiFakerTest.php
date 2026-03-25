@@ -7,7 +7,7 @@ namespace malpka32\InPostBuySdk\Tests\Fixtures;
 use malpka32\InPostBuySdk\Mapper\Category\CategoryCollectionMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferDtoMapper;
-use malpka32\InPostBuySdk\Mapper\Order\OrderCollectionMapper;
+use malpka32\InPostBuySdk\Mapper\Order\Core\OrderCollectionMapper;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,7 +26,7 @@ final class ApiFakerTest extends TestCase
     {
         $mapper = new CategoryCollectionMapper();
         for ($i = 0; $i < 5; $i++) {
-            $data = $this->faker->categoriesResponse('categories', 2);
+            $data = $this->faker->categoriesResponse(2);
             $result = $mapper->map($data);
             $this->assertCount(2, $result);
             $this->assertNotNull($result->offsetGet(0)->id);
@@ -50,7 +50,7 @@ final class ApiFakerTest extends TestCase
     {
         $mapper = new OrderCollectionMapper();
         for ($i = 0; $i < 3; $i++) {
-            $data = $this->faker->ordersList(2, 'items');
+            $data = $this->faker->ordersList(2);
             $result = $mapper->map($data);
             $this->assertCount(2, $result);
             $this->assertNotNull($result->offsetGet(0)->createdAt);

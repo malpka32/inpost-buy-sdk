@@ -11,7 +11,7 @@ namespace malpka32\InPostBuySdk\Tests\Fixtures;
 final class ApiMocks
 {
     /**
-     * GET /v1/categories – flat category list (API: {"categories": [{"id","name","parentId","parent_id"}, ...]}).
+     * GET /v1/categories – flat category list (API: {"categories": [{"id","name","parentId"}, ...]}).
      *
      * @return array<int, array<string, mixed>>
      */
@@ -22,13 +22,11 @@ final class ApiMocks
                 'id' => '67909821-cc25-45ec-80ce-5ac4f2f01032',
                 'name' => 'Consumer Electronics',
                 'parentId' => null,
-                'parent_id' => null,
             ],
             [
                 'id' => '7f3b0598-5fd7-4cf6-8385-6a7cd44a6d74',
                 'name' => 'Health',
                 'parentId' => null,
-                'parent_id' => null,
             ],
         ];
     }
@@ -44,7 +42,7 @@ final class ApiMocks
     }
 
     /**
-     * Response with "categories" key, flat list with parent_id (matches real API shape).
+     * Response with "categories" key and explicit parentId values.
      *
      * @return array<string, mixed>
      */
@@ -52,8 +50,8 @@ final class ApiMocks
     {
         return [
             'categories' => [
-                ['id' => 'root-1', 'name' => 'Root', 'parentId' => null, 'parent_id' => null],
-                ['id' => 'child-1', 'name' => 'Child', 'parentId' => 'root-1', 'parent_id' => 'root-1'],
+                ['id' => 'root-1', 'name' => 'Root', 'parentId' => null],
+                ['id' => 'child-1', 'name' => 'Child', 'parentId' => 'root-1'],
             ],
         ];
     }
@@ -232,19 +230,7 @@ final class ApiMocks
     {
         return [
             'page' => ['limit' => 10, 'offset' => 0, 'total' => 1],
-            'items' => [self::singleOrderPayload()],
-        ];
-    }
-
-    /**
-     * Alternative form with "orders" key.
-     *
-     * @return array<string, mixed>
-     */
-    public static function ordersListResponseWithOrdersKey(): array
-    {
-        return [
-            'orders' => [self::singleOrderPayload()],
+            'data' => [self::singleOrderPayload()],
         ];
     }
 
@@ -261,11 +247,96 @@ final class ApiMocks
             'createdAt' => '2025-02-15T13:45:30+00:00',
             'updatedAt' => '2025-02-15T14:00:00+00:00',
             'status' => 'CREATED',
-            'delivery' => [],
-            'orderLines' => [],
+            'customer' => [
+                'email' => 'buyer@example.com',
+                'firstName' => 'Jan',
+                'lastName' => 'Kowalski',
+                'phoneNumber' => '+48111111111',
+                'address' => [
+                    'street' => 'Testowa',
+                    'city' => 'Krakow',
+                    'postCode' => '31-001',
+                    'state' => 'malopolskie',
+                    'countryCode' => 'PL',
+                    'building' => '10',
+                    'flat' => '2',
+                ],
+            ],
+            'invoice' => [
+                'email' => 'billing@example.com',
+                'legalForm' => 'COMPANY',
+                'companyName' => 'ACME Sp. z o.o.',
+                'firstName' => 'Jan',
+                'lastName' => 'Kowalski',
+                'taxIdPrefix' => 'PL',
+                'taxId' => '1234567890',
+                'address' => [
+                    'street' => 'Fakturowa',
+                    'city' => 'Warszawa',
+                    'postCode' => '00-001',
+                    'state' => 'mazowieckie',
+                    'countryCode' => 'PL',
+                    'building' => '1A',
+                    'flat' => null,
+                ],
+            ],
+            'delivery' => [
+                'deliveryType' => 'APM',
+                'parcels' => [
+                    [
+                        'trackingNumber' => 'PKG123456789',
+                        'createdAt' => '2025-02-15T13:50:00+00:00',
+                        'status' => 'SENT',
+                    ],
+                ],
+                'name' => 'Paczkomat',
+                'deliveryPoint' => 'KRA01M',
+                'address' => [
+                    'street' => 'Punktowa',
+                    'city' => 'Krakow',
+                    'postCode' => '30-001',
+                    'state' => 'malopolskie',
+                    'countryCode' => 'PL',
+                    'building' => '5',
+                    'flat' => null,
+                ],
+                'email' => 'delivery@example.com',
+                'phoneNumber' => '+48222222222',
+                'price' => ['amount' => 12.99, 'currency' => 'PLN'],
+                'expectedDeliveryDate' => '2025-02-17T10:00:00+00:00',
+            ],
+            'orderLines' => [
+                [
+                    'offer' => [
+                        'offerId' => 'offer-uuid-1',
+                        'product' => [
+                            'productId' => 'prod-1',
+                            'name' => 'Test product',
+                            'ean' => '5904959447006',
+                            'sku' => 'SKU-1',
+                        ],
+                        'price' => ['amount' => 49.99, 'currency' => 'PLN'],
+                        'basePrice' => ['amount' => 59.99, 'currency' => 'PLN'],
+                        'promotionPrice' => ['amount' => 49.99, 'currency' => 'PLN'],
+                        'externalId' => 'EXT-SKU-1',
+                    ],
+                ],
+            ],
             'finalPrice' => ['amount' => 99.99, 'currency' => 'PLN'],
-            'paymentDetails' => [],
+            'basePrice' => ['amount' => 109.99, 'currency' => 'PLN'],
+            'promotionPrice' => ['amount' => 99.99, 'currency' => 'PLN'],
+            'paymentDetails' => [
+                'selectedPaymentType' => 'CARD',
+                'payments' => [
+                    [
+                        'paymentId' => 'payment-1',
+                        'paymentType' => 'CARD',
+                        'paymentDate' => '2025-02-15T13:46:00+00:00',
+                    ],
+                ],
+            ],
             'reference' => 'REF-001',
+            'comment' => 'Please ring the bell',
         ];
     }
 

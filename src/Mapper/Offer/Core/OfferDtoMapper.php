@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Mapper\Offer\Core;
 
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
 use malpka32\InPostBuySdk\Mapper\Offer\Gpsr\OfferGpsrSingleMapper;
@@ -55,8 +56,8 @@ final class OfferDtoMapper implements ItemMapperInterface
         $affiliationProductUrl = ArrayHelper::get($offer, 'affiliationProductUrl');
         $postSale = $this->postSaleMapper->map($offer['postSale'] ?? null);
         $features = $this->featuresMapper->map($offer['features'] ?? null);
-        $inpostOfferId = ArrayHelper::get($offer, ['id', 'offerId']);
-        $status = ArrayHelper::get($offer, ['status', 'offerStatus']);
+        $inpostOfferId = ArrayHelper::get($offer, 'id');
+        $status = ArrayHelper::get($offer, 'status');
         return new OfferDto(
             externalId: $externalId,
             product: $productDto,
@@ -68,7 +69,7 @@ final class OfferDtoMapper implements ItemMapperInterface
             affiliationProductUrl: $affiliationProductUrl !== null ? ArrayHelper::asString($affiliationProductUrl) : null,
             postSale: $postSale,
             features: $features,
-            status: $status !== null ? ArrayHelper::asString($status) : null,
+            status: $status !== null ? OfferStatus::tryFrom(ArrayHelper::asString($status)) : null,
         );
     }
 }

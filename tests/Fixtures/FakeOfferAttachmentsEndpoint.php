@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Fixtures;
 
 use malpka32\InPostBuySdk\Api\OfferAttachmentsEndpointInterface;
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
@@ -36,7 +37,7 @@ final class FakeOfferAttachmentsEndpoint implements OfferAttachmentsEndpointInte
         return $this->listResponse;
     }
 
-    public function create(string $offerId, string $attachmentType, mixed $file): array
+    public function create(string $offerId, AttachmentType|string $attachmentType, mixed $file): array
     {
         return ['commandId' => 'cmd-att-1', 'status' => 'PENDING'];
     }

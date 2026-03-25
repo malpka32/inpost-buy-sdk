@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Fixtures;
 
 use malpka32\InPostBuySdk\Api\OffersEndpointInterface;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 
 /**
  * Test double returning ApiMocks data instead of HTTP.
@@ -22,6 +24,9 @@ final class FakeOffersEndpoint implements OffersEndpointInterface
 
     /** @var array<string, mixed>|null */
     private ?array $getResponse;
+
+    /** @var array{offerStatus: list<OfferStatus|string>|null, limit: int|null, offset: int|null, sort: list<ListSort|string>|null}|null */
+    public ?array $lastListCall = null;
 
     /**
      * @param array<string, mixed>         $listResponse
@@ -43,6 +48,15 @@ final class FakeOffersEndpoint implements OffersEndpointInterface
 
     public function list(?array $offerStatus = null, ?int $limit = null, ?int $offset = null, ?array $sort = null): array
     {
+        /** @var list<OfferStatus|string>|null $offerStatus */
+        /** @var list<ListSort|string>|null $sort */
+        $this->lastListCall = [
+            'offerStatus' => $offerStatus,
+            'limit' => $limit,
+            'offset' => $offset,
+            'sort' => $sort,
+        ];
+
         return $this->listResponse;
     }
 

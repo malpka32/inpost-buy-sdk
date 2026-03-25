@@ -4,23 +4,35 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Dto\Order;
 
+use malpka32\InPostBuySdk\Collection\OrderLineCollection;
+use malpka32\InPostBuySdk\Dto\Order\Core\OrderCustomerDto;
+use malpka32\InPostBuySdk\Dto\Order\Core\OrderDeliveryDto;
+use malpka32\InPostBuySdk\Dto\Order\Core\OrderInvoiceDto;
+use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
+use malpka32\InPostBuySdk\Dto\Order\Core\OrderPaymentDetailsDto;
+
 /**
  * Order DTO from InPost Buy API.
  */
 final class OrderDto
 {
-    /**
-     * @param list<array<string, mixed>>|null $items
-     * @param array<string, mixed>|null $raw
-     */
     public function __construct(
         public string $inpostOrderId,
-        public ?string $status = null,
+        public ?string $organizationId = null,
+        public ?OrderStatus $status = null,
         public ?string $reference = null,
         public ?\DateTimeInterface $createdAt = null,
         public ?\DateTimeInterface $updatedAt = null,
-        /** @var list<array<string, mixed>>|null */
-        public ?array $items = null,
+        public ?OrderCustomerDto $customer = null,
+        public ?OrderInvoiceDto $invoice = null,
+        public ?OrderDeliveryDto $delivery = null,
+        /** Pozycje zamówienia (OpenAPI: orderLines); null gdy klucza nie ma w odpowiedzi. */
+        public ?OrderLineCollection $orderLines = null,
+        public ?OrderMoneyDto $finalPrice = null,
+        public ?OrderMoneyDto $basePrice = null,
+        public ?OrderMoneyDto $promotionPrice = null,
+        public ?OrderPaymentDetailsDto $paymentDetails = null,
+        public ?string $comment = null,
         /** @var array<string, mixed>|null */
         public ?array $raw = null,
     ) {

@@ -26,7 +26,7 @@ final class ApiFaker
      * @return array<int, array<string, mixed>>
      */
     /**
-     * Flat category items (API shape: id, name, parentId, parent_id).
+     * Flat category items (API shape: id, name, parentId).
      *
      * @return list<array<string, mixed>>
      */
@@ -40,7 +40,6 @@ final class ApiFaker
                 'id' => $id,
                 'name' => $this->faker->words(2, true),
                 'parentId' => $parentId,
-                'parent_id' => $parentId,
             ];
             if ($i === 0) {
                 $parentId = $id;
@@ -50,13 +49,13 @@ final class ApiFaker
     }
 
     /**
-     * Categories response with key (e.g. 'categories' or 'items').
+     * Categories response with documented key.
      *
      * @return array<string, mixed>
      */
-    public function categoriesResponse(string $key = 'categories', int $count = 3): array
+    public function categoriesResponse(int $count = 3): array
     {
-        return [$key => $this->categories($count)];
+        return ['categories' => $this->categories($count)];
     }
 
     /**
@@ -166,11 +165,11 @@ final class ApiFaker
     }
 
     /**
-     * Orders list (items or orders).
+     * Orders list (documented shape: data[]).
      *
      * @return array<string, mixed>
      */
-    public function ordersList(int $count = 3, string $key = 'items'): array
+    public function ordersList(int $count = 3): array
     {
         $orders = [];
         for ($i = 0; $i < $count; $i++) {
@@ -178,7 +177,7 @@ final class ApiFaker
         }
         return [
             'page' => ['limit' => 10, 'offset' => 0, 'total' => $count],
-            $key => $orders,
+            'data' => $orders,
         ];
     }
 

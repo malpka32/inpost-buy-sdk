@@ -25,7 +25,7 @@ final class CategoryCollectionMapper implements CollectionMapperInterface, ItemM
     public function map(array $data): CategoryCollection
     {
         $collection = new CategoryCollection();
-        $list = ArrayHelper::getList($data, ['categories', 'items']);
+        $list = ArrayHelper::getList($data, ['categories']);
         foreach ($list as $item) {
             if (!$this->canProcess($item)) {
                 continue;

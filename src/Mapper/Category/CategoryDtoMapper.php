@@ -24,7 +24,7 @@ final class CategoryDtoMapper implements ItemMapperInterface
         /** @var array<string, mixed> $item */
         $id = ArrayHelper::get($item, 'id');
         $name = ArrayHelper::get($item, 'name');
-        $parentId = ArrayHelper::get($item, ['parent_id', 'parentId']);
+        $parentId = ArrayHelper::get($item, 'parentId');
         if ($parentId === null) {
             $relations = $item['relations'] ?? null;
             if (is_array($relations)) {

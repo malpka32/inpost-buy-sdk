@@ -52,6 +52,9 @@ composer require malpka32/inpost-buy-sdk
 <?php
 
 use malpka32\InPostBuySdk\Client\InPostBuyClient;
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
 use Symfony\Component\HttpClient\HttpClient;
 
 $client = new InPostBuyClient(
@@ -69,10 +72,10 @@ foreach ($categories as $category) {
 }
 
 // Fetch offers
-$offers = $client->getOffers(offerStatus: ['PUBLISHED'], limit: 20);
+$offers = $client->getOffers(offerStatus: [OfferStatus::PUBLISHED], limit: 20);
 
 // Fetch orders
-$orders = $client->getOrders(status: 'CREATED');
+$orders = $client->getOrders(status: OrderStatus::CREATED, sort: [ListSort::CREATED_AT_DESC]);
 ```
 
 ---
@@ -183,11 +186,14 @@ foreach ($ids as $id) {
 ### Listing and Filtering Offers
 
 ```php
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
+
 $offers = $client->getOffers(
-    offerStatus: ['PENDING', 'PUBLISHED'],
+    offerStatus: [OfferStatus::PENDING, OfferStatus::PUBLISHED],
     limit: 50,
     offset: 0,
-    sort: ['-updatedAt']
+    sort: [ListSort::UPDATED_AT_DESC]
 );
 
 foreach ($offers as $offer) {
@@ -248,8 +254,18 @@ $client = InPostBuyClient::createWithTokenProvider(
 ### Orders
 
 ```php
-// List orders (optionally filter by status)
-$orders = $client->getOrders(status: 'CREATED');
+use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentStatus;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
+use malpka32\InPostBuySdk\Dto\Order\OrderStatusDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderUpdateStatus;
+
+// List orders (optionally filter by status/payment status/sort)
+$orders = $client->getOrders(
+    status: OrderStatus::CREATED,
+    paymentStatus: OrderPaymentStatus::PAID,
+    sort: [ListSort::CREATED_AT_DESC],
+);
 
 foreach ($orders as $order) {
     echo $order->inpostOrderId . " – " . ($order->reference ?? 'no ref') . "\n";
@@ -258,17 +274,15 @@ foreach ($orders as $order) {
 // Fetch single order
 $order = $client->getOrder('order-uuid-from-inpost');
 if ($order !== null) {
-    var_dump($order->status, $order->items);
+    var_dump($order->status, $order->orderLines);
 }
 
 // Accept order
-use malpka32\InPostBuySdk\Dto\OrderStatusDto;
-
-$client->updateOrderStatus('order-uuid', new OrderStatusDto(status: 'ACCEPTED'));
+$client->updateOrderStatus('order-uuid', new OrderStatusDto(status: OrderUpdateStatus::ACCEPTED));
 
 // Refuse with reason
 $client->updateOrderStatus('order-uuid', new OrderStatusDto(
-    status: 'REFUSED',
+    status: OrderUpdateStatus::REFUSED,
     comment: 'Out of stock'
 ));
 ```

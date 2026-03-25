@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace malpka32\InPostBuySdk\Mapper\Order;
+namespace malpka32\InPostBuySdk\Mapper\Order\Core;
 
 use malpka32\InPostBuySdk\Collection\OrderCollection;
 use malpka32\InPostBuySdk\Dto\Order\OrderDto;
@@ -25,7 +25,7 @@ final class OrderCollectionMapper implements CollectionMapperInterface, ItemMapp
     public function map(array $data): OrderCollection
     {
         $collection = new OrderCollection();
-        $list = ArrayHelper::getList($data, ['items', 'orders']);
+        $list = ArrayHelper::getList($data, ['data']);
         foreach ($list as $item) {
             if (!$this->canProcess($item)) {
                 continue;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Api;
 
+use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
 use malpka32\InPostBuySdk\Transport\ApiTransport;
 use malpka32\InPostBuySdk\Transport\ResponseDecoder;
 use Symfony\Component\Mime\Part\DataPart;
@@ -65,9 +66,10 @@ final class OfferAttachmentsEndpoint implements OfferAttachmentsEndpointInterfac
      *
      * @return array<string, mixed> { commandId, status }
      */
-    public function create(string $offerId, string $attachmentType, mixed $file): array
+    public function create(string $offerId, AttachmentType|string $attachmentType, mixed $file): array
     {
-        $url = $this->baseUrl . $this->attachmentsPath($offerId) . '?' . http_build_query(['attachmentType' => $attachmentType]);
+        $attachmentTypeValue = $attachmentType instanceof AttachmentType ? $attachmentType->value : (string) $attachmentType;
+        $url = $this->baseUrl . $this->attachmentsPath($offerId) . '?' . http_build_query(['attachmentType' => $attachmentTypeValue]);
 
         if (!$file instanceof \SplFileInfo) {
             throw new \InvalidArgumentException('File must be SplFileInfo (resource is not supported for multipart upload)');
