@@ -1,6 +1,6 @@
 {
     "name": "malpka32/inpost-buy-sdk",
-    "version": "0.7.3",
+    "version": "0.7.4",
     "description": "PHP client for InPost Buy (inpsa) API",
     "type": "library",
     "license": "MIT",
