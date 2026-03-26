@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3] - 2026-03-25
+
+### Added
+
+- `OrderPaymentType` enum completed with documented values:
+  `CARD`, `CARD_TOKEN`, `GOOGLE_PAY`, `APPLE_PAY`, `BLIK_CODE`, `BLIK_TOKEN`,
+  `PAY_BY_LINK`, `SHOPPING_LIMIT`, `DEFERRED_PAYMENT`, `CASH_ON_DELIVERY`, `UNKNOWN`.
+- New `OrderEventCollection` for strongly typed order events results.
+- New `OrderEventOrderDto` for nested `order` object in event payloads.
+- New shared `DateTimeHelper::parseOrNull()` to centralize nullable datetime parsing.
+
+### Changed
+
+- `OrderEventsResultDto` now returns `OrderEventCollection` instead of raw array.
+- `OrderEventDto` now maps typed fields (`id`, `order`, `eventType`, `occurredAt`) while preserving raw payload.
+- `OrderPaymentDto` and `OrderPaymentDetailsDto` now support `OrderPaymentType|string|null`.
+- Payment type normalization moved from mappers into `OrderPaymentType::fromRaw()`.
+- Replaced duplicated datetime parsing in order mappers/DTO mapping with `DateTimeHelper`.
+- Updated fixtures and tests for typed order events and payment type mapping.
+
+---
+
 ## [0.7.2] - 2026-03-25
 
 ### Changed
@@ -115,6 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support section with buycoffee.to link
 
 
+[0.7.3]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.3
 [0.7.2]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.2
 [0.7.1]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.1
 [0.7.0]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.0

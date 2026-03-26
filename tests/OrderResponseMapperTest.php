@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests;
 
 use malpka32\InPostBuySdk\Dto\Order\OrderStatus;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentType;
 use malpka32\InPostBuySdk\Mapper\Order\Core\OrderCollectionMapper;
 use malpka32\InPostBuySdk\Tests\Fixtures\ApiMocks;
 use PHPUnit\Framework\TestCase;
@@ -65,10 +66,11 @@ final class OrderResponseMapperTest extends TestCase
         $this->assertNotNull($order->basePrice);
         $this->assertSame(109.99, $order->basePrice->amount);
         $this->assertNotNull($order->paymentDetails);
-        $this->assertSame('CARD', $order->paymentDetails->selectedPaymentType);
+        $this->assertSame(OrderPaymentType::CARD, $order->paymentDetails->selectedPaymentType);
         $this->assertNotNull($order->paymentDetails->payments);
         $this->assertCount(1, $order->paymentDetails->payments);
         $this->assertSame('payment-1', $order->paymentDetails->payments->offsetGet(0)->paymentId);
+        $this->assertSame(OrderPaymentType::CARD, $order->paymentDetails->payments->offsetGet(0)->paymentType);
     }
 
     public function testMapOrdersIgnoresUndocumentedOrdersKey(): void

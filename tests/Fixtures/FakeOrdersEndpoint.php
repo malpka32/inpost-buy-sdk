@@ -23,14 +23,19 @@ final class FakeOrdersEndpoint implements OrdersEndpointInterface
     /** @var array{status: OrderStatus|string|null, paymentStatus: OrderPaymentStatus|string|null, limit: int|null, offset: int|null, sort: list<ListSort|string>|null}|null */
     public ?array $lastListCall = null;
 
+    /** @var array<string, mixed> */
+    private array $eventsResponse;
+
     /**
      * @param array<string, mixed> $listResponse
      * @param array<string, mixed>|null $getResponse
+     * @param array<string, mixed> $eventsResponse
      */
-    public function __construct(array $listResponse = [], ?array $getResponse = null)
+    public function __construct(array $listResponse = [], ?array $getResponse = null, array $eventsResponse = ['data' => []])
     {
         $this->listResponse = $listResponse;
         $this->getResponse = $getResponse;
+        $this->eventsResponse = $eventsResponse;
     }
 
     public function list(
@@ -71,6 +76,6 @@ final class FakeOrdersEndpoint implements OrdersEndpointInterface
 
     public function getEvents(?string $untilId = null, ?array $eventType = null, ?int $limit = null): array
     {
-        return ['data' => []];
+        return $this->eventsResponse;
     }
 }

@@ -12,6 +12,7 @@ use malpka32\InPostBuySdk\Dto\Order\Core\OrderInvoiceDto;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderPaymentDetailsDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\DateTimeHelper;
 use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
 use malpka32\InPostBuySdk\Mapper\Order\Line\OrderLineCollectionMapper;
 
@@ -39,8 +40,8 @@ final class OrderDtoMapper implements ItemMapperInterface
     {
         $item = is_array($item) ? $item : [];
         /** @var array<string, mixed> $item */
-        $createdAt = self::parseDateTime(ArrayHelper::get($item, 'createdAt'));
-        $updatedAt = self::parseDateTime(ArrayHelper::get($item, 'updatedAt'));
+        $createdAt = DateTimeHelper::parseOrNull(ArrayHelper::get($item, 'createdAt'));
+        $updatedAt = DateTimeHelper::parseOrNull(ArrayHelper::get($item, 'updatedAt'));
 
         $status = ArrayHelper::get($item, 'status');
         $organizationId = ArrayHelper::get($item, 'organizationId');
@@ -111,20 +112,4 @@ final class OrderDtoMapper implements ItemMapperInterface
         return $mapped instanceof OrderPaymentDetailsDto ? $mapped : null;
     }
 
-    private static function parseDateTime(mixed $value): ?\DateTimeInterface
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-        $str = ArrayHelper::asString($value);
-        $parsed = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $str);
-        if ($parsed instanceof \DateTimeInterface) {
-            return $parsed;
-        }
-        try {
-            return new \DateTimeImmutable($str);
-        } catch (\Exception) {
-            return null;
-        }
-    }
 }

@@ -10,6 +10,7 @@ use malpka32\InPostBuySdk\Dto\Order\Core\OrderDeliveryDto;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderDeliveryParcelDto;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
+use malpka32\InPostBuySdk\Helper\DateTimeHelper;
 use malpka32\InPostBuySdk\Mapper\ItemMapperInterface;
 use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 
@@ -41,7 +42,7 @@ final class OrderDeliveryDtoMapper implements SingleItemMapperInterface
 
         $address = $this->addressMapper->map(ArrayHelper::get($data, 'address'));
         $price = $this->moneyMapper->map(ArrayHelper::get($data, 'price'));
-        $expectedDeliveryDate = self::parseDateTime(ArrayHelper::get($data, 'expectedDeliveryDate'));
+        $expectedDeliveryDate = DateTimeHelper::parseOrNull(ArrayHelper::get($data, 'expectedDeliveryDate'));
 
         $parcelsRaw = ArrayHelper::get($data, 'parcels');
         $parcels = null;
@@ -73,20 +74,4 @@ final class OrderDeliveryDtoMapper implements SingleItemMapperInterface
         );
     }
 
-    private static function parseDateTime(mixed $value): ?\DateTimeInterface
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-        $str = ArrayHelper::asString($value);
-        $parsed = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $str);
-        if ($parsed instanceof \DateTimeInterface) {
-            return $parsed;
-        }
-        try {
-            return new \DateTimeImmutable($str);
-        } catch (\Exception) {
-            return null;
-        }
-    }
 }

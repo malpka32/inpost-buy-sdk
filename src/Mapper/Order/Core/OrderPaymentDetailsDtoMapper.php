@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Mapper\Order\Core;
 
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderPaymentDetailsDto;
+use malpka32\InPostBuySdk\Dto\Order\OrderPaymentType;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
 use malpka32\InPostBuySdk\Mapper\SingleItemMapperInterface;
 
@@ -34,7 +35,7 @@ final class OrderPaymentDetailsDtoMapper implements SingleItemMapperInterface
         }
 
         return new OrderPaymentDetailsDto(
-            selectedPaymentType: $selectedPaymentType === null ? null : ArrayHelper::asString($selectedPaymentType),
+            selectedPaymentType: OrderPaymentType::fromRaw($selectedPaymentType),
             payments: $payments,
         );
     }

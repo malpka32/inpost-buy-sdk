@@ -114,12 +114,20 @@ final class OrdersRepositoryTest extends TestCase
 
     public function testGetOrderEventsReturnsResultDto(): void
     {
-        $endpoint = new FakeOrdersEndpoint();
+        $endpoint = new FakeOrdersEndpoint(eventsResponse: ApiMocks::orderEventsResponse());
         $repository = new OrdersRepository($endpoint, new OrderCollectionMapper());
 
         $result = $repository->getOrderEvents(limit: 50);
 
-        $this->assertSame([], $result->getEvents());
+        $events = $result->getEvents();
+        $this->assertCount(1, $events);
+
+        $event = $events->offsetGet(0);
+        $this->assertSame('evt-uuid-1', $event->id);
+        $this->assertNotNull($event->order);
+        $this->assertSame('order-uuid-123', $event->order->id);
+        $this->assertSame(OrderEventType::CREATED, $event->eventType);
+        $this->assertInstanceOf(\DateTimeInterface::class, $event->occurredAt);
     }
 
     public function testGetOrderEventsAcceptsEnumEventTypes(): void
@@ -132,6 +140,6 @@ final class OrdersRepositoryTest extends TestCase
             limit: 50,
         );
 
-        $this->assertSame([], $result->getEvents());
+        $this->assertCount(0, $result->getEvents());
     }
 }

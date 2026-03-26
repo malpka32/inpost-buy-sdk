@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Dto\Order\Response;
 
+use malpka32\InPostBuySdk\Collection\OrderEventCollection;
+
 /**
  * Result of list order events – API response { data: OrderEvent[] }.
  */
 final class OrderEventsResultDto
 {
     /**
-     * @param list<OrderEventDto> $events
+     * @param OrderEventCollection $events
      */
     public function __construct(
-        private readonly array $events,
+        private readonly OrderEventCollection $events,
     ) {
     }
 
@@ -26,28 +28,28 @@ final class OrderEventsResultDto
     }
 
     /**
-     * @return list<OrderEventDto>
+     * @return OrderEventCollection
      */
-    public function getEvents(): array
+    public function getEvents(): OrderEventCollection
     {
         return $this->events;
     }
 
     /**
      * @param mixed $itemsRaw
-     * @return list<OrderEventDto>
+     * @return OrderEventCollection
      */
-    private static function mapEvents(mixed $itemsRaw): array
+    private static function mapEvents(mixed $itemsRaw): OrderEventCollection
     {
         if (!is_array($itemsRaw)) {
-            return [];
+            return new OrderEventCollection();
         }
 
         $filtered = array_values(array_filter($itemsRaw, 'is_array'));
         /** @var list<array<string, mixed>> $filtered */
-        return array_map(
+        return OrderEventCollection::fromArray(array_map(
             static fn (array $item): OrderEventDto => OrderEventDto::fromArray($item),
             $filtered,
-        );
+        ));
     }
 }

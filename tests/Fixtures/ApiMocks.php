@@ -341,6 +341,37 @@ final class ApiMocks
     }
 
     /**
+     * GET /v1/organizations/{id}/orders/events – events list response.
+     *
+     * @return array<string, mixed>
+     */
+    public static function orderEventsResponse(): array
+    {
+        return [
+            'data' => [
+                self::singleOrderEventPayload(),
+            ],
+        ];
+    }
+
+    /**
+     * Single Order event payload.
+     *
+     * @return array<string, mixed>
+     */
+    public static function singleOrderEventPayload(): array
+    {
+        return [
+            'id' => 'evt-uuid-1',
+            'order' => [
+                'id' => 'order-uuid-123',
+            ],
+            'orderEventType' => 'CREATED',
+            'occurredAt' => '2025-02-15T13:45:30+00:00',
+        ];
+    }
+
+    /**
      * ErrorResponse (application/problem+json) – schema: errorCode, errorMessage?, details?.
      *
      * @return array<string, mixed>
