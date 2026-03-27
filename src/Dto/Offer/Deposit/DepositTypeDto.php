@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer\Deposit;
 
 /**
- * Typ kaucji za opakowanie wielokrotnego użytku (OpenAPI: DepositType).
+ * Reusable packaging deposit type (OpenAPI: DepositType).
  *
- * Używany w PriceTag.deposits – identyfikator typu kaucji oraz cena.
- * Dostępne typy: GET /v1/offers/deposit-types.
+ * Used in PriceTag.deposits – deposit type identifier and price.
+ * Available types: GET /v1/offers/deposit-types.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/getOffersDepositTypesV1
  */
 final class DepositTypeDto
 {
     public function __construct(
-        /** UUID typu kaucji z API deposit-types. */
+        /** Deposit type UUID from deposit-types API. */
         public string $id,
-        /** Kwota kaucji. */
+        /** Deposit amount. */
         public float $amount,
         /** Currency (e.g. PLN). */
         public string $currency,

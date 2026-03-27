@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer;
 
 /**
- * Czas wysyłki oferty (OpenAPI: ShippingTime).
+ * Offer shipping time (OpenAPI: ShippingTime).
  *
- * Liczba dni potrzebnych sprzedawcy na wysłanie paczki.
+ * Number of days the seller needs to ship the parcel.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/postOffersV1
  */
 final class ShippingTimeDto
 {
     public function __construct(
-        /** Liczba dni na wysłanie paczki (min. 0). */
+        /** Number of days to ship the parcel (min. 0). */
         public int $daysToShip,
     ) {
     }

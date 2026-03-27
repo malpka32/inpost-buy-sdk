@@ -24,4 +24,12 @@ final class OrderEventCollection extends AbstractCollection
     {
         return new self($events);
     }
+
+    public function reverse(): self
+    {
+        /** @var list<OrderEventDto> $events */
+        $events = array_reverse($this->toArray());
+
+        return self::fromArray($events);
+    }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Core;
 
 /**
- * Adres używany w danych klienta, faktury i dostawy.
+ * Address used in customer, invoice and delivery data.
  */
 final class OrderAddressDto
 {

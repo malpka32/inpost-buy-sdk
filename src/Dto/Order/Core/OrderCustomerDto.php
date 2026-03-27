@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Core;
 
 /**
- * Dane kupującego.
+ * Customer data.
  */
 final class OrderCustomerDto
 {

@@ -7,27 +7,27 @@ namespace malpka32\InPostBuySdk\Dto\Offer\Gpsr;
 use malpka32\InPostBuySdk\Collection\GpsrManualCollection;
 
 /**
- * Informacje GPSR – regulacje bezpieczeństwa produktów UE (OpenAPI: GpsrInfo).
+ * GPSR information – EU product safety regulations (OpenAPI: GpsrInfo).
  *
  * General Product Safety Regulation – required for some categories.
- * doesNotRequireGpsrInfo w kategorii zwalnia z obowiązku.
+ * doesNotRequireGpsrInfo in the category exempts from this requirement.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/postOffersV1
  */
 final class GpsrInfoDto
 {
     public function __construct(
-        /** Instrukcje obsługi produktu. */
+        /** Product manuals. */
         public ?GpsrManualCollection $manuals = null,
         /** Manufacturer data (required for GPSR). */
         public ?GpsrManufacturerDto $manufacturer = null,
-        /** Produkt wprowadzony przed 13.12.2024 – nie wymaga pełnych informacji GPSR. */
+        /** Product introduced before 13.12.2024 – does not require full GPSR information. */
         public ?bool $doesNotRequireGpsrInfo = null,
-        /** Informacje o bezpieczeństwie. */
+        /** Safety information. */
         public ?string $safetyInformation = null,
-        /** Numer partii. */
+        /** Batch number. */
         public ?string $batchNumber = null,
-        /** Czy produkt ma oznakowanie CE. */
+        /** Whether the product has CE marking. */
         public ?bool $ceMarking = null,
     ) {
     }

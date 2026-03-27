@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer\Deposit;
 
 /**
- * Etykieta typu kaucji (OpenAPI: DepositLabel).
+ * Deposit type label (OpenAPI: DepositLabel).
  *
  * Returned by GET /v1/offers/deposit-types.
  *
@@ -16,7 +16,7 @@ final class DepositLabelDto
     public function __construct(
         /** Deposit type name (e.g. "Reusable glass bottles"). */
         public string $name,
-        /** Typ kaucji z id i ceną. */
+        /** Deposit type with id and price. */
         public DepositTypeDto $depositType,
     ) {
     }

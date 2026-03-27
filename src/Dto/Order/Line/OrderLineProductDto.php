@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Line;
 
 /**
- * Produkt na linii zamówienia (OpenAPI: product w obiekcie offer linii).
+ * Product within an order line (OpenAPI: product in the offer object of a line).
  */
 final class OrderLineProductDto
 {

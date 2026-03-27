@@ -8,7 +8,7 @@ use malpka32\InPostBuySdk\Collection\OrderPaymentCollection;
 use malpka32\InPostBuySdk\Dto\Order\OrderPaymentType;
 
 /**
- * Szczegóły płatności zamówienia.
+ * Order payment details.
  */
 final class OrderPaymentDetailsDto
 {

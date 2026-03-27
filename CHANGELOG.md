@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.5] - 2026-03-25
+
+### Added
+
+- Added `OrderEventCollection::reverse()` to return a new collection with reversed event order.
+- Added unit test coverage for reversing order event collections.
+
+### Changed
+
+- Replaced Polish comments/PHPDoc in DTOs and exceptions with English wording for codebase consistency.
+
+---
+
 ## [0.7.4] - 2026-03-25
 
 ### Changed

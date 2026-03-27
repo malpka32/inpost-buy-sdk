@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Category;
 
 /**
- * Szczegółowa kategoria (OpenAPI: CategoryDetailed).
+ * Detailed category (OpenAPI: CategoryDetailed).
  *
- * Zawiera relations, metadata, children.
+ * Contains relations, metadata, children.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Categories
  */

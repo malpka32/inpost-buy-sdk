@@ -7,7 +7,7 @@ namespace malpka32\InPostBuySdk\Dto\Order\Core;
 use malpka32\InPostBuySdk\Collection\OrderDeliveryParcelCollection;
 
 /**
- * Dane dostawy zamówienia.
+ * Order delivery data.
  */
 final class OrderDeliveryDto
 {

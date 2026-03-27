@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Line;
 
 /**
- * Pozycja zamówienia (OpenAPI: element orderLines).
+ * Order line item (OpenAPI: orderLines element).
  */
 final class OrderLineDto
 {

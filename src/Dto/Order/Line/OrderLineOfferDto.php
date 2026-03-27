@@ -7,7 +7,7 @@ namespace malpka32\InPostBuySdk\Dto\Order\Line;
 use malpka32\InPostBuySdk\Dto\Order\Core\OrderMoneyDto;
 
 /**
- * Oferta na linii zamówienia (OpenAPI: offer w orderLines[]).
+ * Offer within an order line (OpenAPI: offer in orderLines[]).
  */
 final class OrderLineOfferDto
 {

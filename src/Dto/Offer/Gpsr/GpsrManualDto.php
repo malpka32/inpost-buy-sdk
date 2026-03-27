@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer\Gpsr;
 
 /**
- * Instrukcja obsługi produktu (OpenAPI: Manual).
+ * Product manual (OpenAPI: Manual).
  *
- * Używana w GPSR – informacje o regulacjach bezpieczeństwa produktu (EU).
+ * Used in GPSR – product safety regulations information (EU).
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/postOffersV1
  */
 final class GpsrManualDto
 {
     public function __construct(
-        /** Tytuł instrukcji (5–500 znaków). */
+        /** Manual title (5–500 characters). */
         public string $title,
-        /** URL do pliku PDF (9–2048 znaków). */
+        /** URL to PDF file (9–2048 characters). */
         public string $url,
     ) {
     }

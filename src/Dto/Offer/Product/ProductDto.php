@@ -7,9 +7,9 @@ namespace malpka32\InPostBuySdk\Dto\Offer\Product;
 use malpka32\InPostBuySdk\Collection\AttributeValueCollection;
 
 /**
- * Dane produktu oferty (OpenAPI: ProductInfoProposal).
+ * Offer product data (OpenAPI: ProductInfoProposal).
  *
- * Propozycja produktu dopasowywanego do katalogu InPost Buy.
+ * Product proposal matched to InPost Buy catalog.
  * Required fields: name, description, brand, categoryId.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/postOffersV1
@@ -17,20 +17,20 @@ use malpka32\InPostBuySdk\Collection\AttributeValueCollection;
 final class ProductDto
 {
     public function __construct(
-        /** Nazwa produktu (ProductName). */
+        /** Product name (ProductName). */
         public string $name,
-        /** Opis produktu (ProductDescription). */
+        /** Product description (ProductDescription). */
         public string $description,
-        /** Marka produktu (ProductBrand). */
+        /** Product brand (ProductBrand). */
         public string $brand,
-        /** UUID kategorii z drzewa kategorii InPost Buy (UuidIdentifier). */
+        /** Category UUID from InPost Buy category tree (UuidIdentifier). */
         public string $categoryId,
         /** SKU – stock keeping unit (optional). */
         public ?string $sku = null,
         /** Product EAN code (optional). */
         public ?string $ean = null,
         ?AttributeValueCollection $attributes = null,
-        /** Wymiary opakowania: szerokość, wysokość, długość (mm), waga (g). */
+        /** Package dimensions: width, height, length (mm), weight (g). */
         public ?DimensionDto $dimension = null,
         /** Product model – e.g. "Basic V-neck" (optional). */
         public ?string $model = null,

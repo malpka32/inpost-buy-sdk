@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer\Deposit;
 
 /**
- * Pozycja kaucji w cenie oferty (OpenAPI: DepositPosition).
+ * Deposit position in offer price (OpenAPI: DepositPosition).
  *
- * Ilość sztuk opakowań objętych kaucją oraz typ kaucji.
+ * Number of packages covered by deposit and the deposit type.
  *
  * @see https://inpsa-api-portal.inpost-group.com/gokart-api.html#tag/Offers/operation/postOffersV1
  */
 final class DepositPositionDto
 {
     public function __construct(
-        /** Liczba sztuk opakowań objętych kaucją. */
+        /** Number of packages covered by deposit. */
         public int $quantity,
-        /** Typ kaucji (id + cena). */
+        /** Deposit type (id + price). */
         public DepositTypeDto $depositType,
     ) {
     }

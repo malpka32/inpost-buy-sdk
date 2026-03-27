@@ -26,7 +26,7 @@ final class OrderDto
         public ?OrderCustomerDto $customer = null,
         public ?OrderInvoiceDto $invoice = null,
         public ?OrderDeliveryDto $delivery = null,
-        /** Pozycje zamówienia (OpenAPI: orderLines); null gdy klucza nie ma w odpowiedzi. */
+        /** Order line items (OpenAPI: orderLines); null when key is missing from response. */
         public ?OrderLineCollection $orderLines = null,
         public ?OrderMoneyDto $finalPrice = null,
         public ?OrderMoneyDto $basePrice = null,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Core;
 
 /**
- * Dane faktury powiązane z zamówieniem.
+ * Invoice data associated with an order.
  */
 final class OrderInvoiceDto
 {

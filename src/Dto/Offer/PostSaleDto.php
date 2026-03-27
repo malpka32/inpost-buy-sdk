@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Offer;
 
 /**
- * Polityka posprzedażowa (OpenAPI: PostSale).
+ * Post-sale policy (OpenAPI: PostSale).
  *
  * Returns and complaints policy for the offer.
  *
@@ -14,9 +14,9 @@ namespace malpka32\InPostBuySdk\Dto\Offer;
 final class PostSaleDto
 {
     public function __construct(
-        /** Opis polityki zwrotów (ReturnPolicy.description). */
+        /** Return policy description (ReturnPolicy.description). */
         public ?string $returnPolicyDescription = null,
-        /** Opis polityki reklamacji (ComplaintPolicy.description). */
+        /** Complaint policy description (ComplaintPolicy.description). */
         public ?string $complaintPolicyDescription = null,
     ) {
     }

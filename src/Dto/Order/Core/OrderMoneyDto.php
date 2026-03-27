@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Dto\Order\Core;
 
 /**
- * Kwota z walutą dla pól cenowych zamówienia.
+ * Amount with currency for order price fields.
  */
 final class OrderMoneyDto
 {
