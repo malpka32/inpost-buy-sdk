@@ -28,6 +28,21 @@ final class FakeOffersEndpoint implements OffersEndpointInterface
     /** @var array{offerStatus: list<OfferStatus|string>|null, limit: int|null, offset: int|null, sort: list<ListSort|string>|null}|null */
     public ?array $lastListCall = null;
 
+    /** @var list<array<string, mixed>>|null */
+    public ?array $lastUpdatePricesPayload = null;
+
+    /** @var list<array<string, mixed>>|null */
+    public ?array $lastUpdateStocksPayload = null;
+
+    /** @var array{offerId: string, payload: array<string, mixed>}|null */
+    public ?array $lastPatchAttributesCall = null;
+
+    /** @var array<string, mixed>|list<mixed> */
+    public array $commandResultsResponse = [];
+
+    /** @var array<string, mixed> */
+    public array $patchAttributesResponse = [];
+
     /**
      * @param array<string, mixed>         $listResponse
      * @param array<string, mixed>         $createResponse
@@ -88,6 +103,24 @@ final class FakeOffersEndpoint implements OffersEndpointInterface
     public function update(string $offerId, array $payload): array
     {
         return $this->createResponse;
+    }
+
+    public function updatePrices(array $payload): array
+    {
+        $this->lastUpdatePricesPayload = $payload;
+        return $this->commandResultsResponse;
+    }
+
+    public function updateStocks(array $payload): array
+    {
+        $this->lastUpdateStocksPayload = $payload;
+        return $this->commandResultsResponse;
+    }
+
+    public function patchAttributes(string $offerId, array $payload): array
+    {
+        $this->lastPatchAttributesCall = ['offerId' => $offerId, 'payload' => $payload];
+        return $this->patchAttributesResponse;
     }
 
     public function close(string $offerId): array

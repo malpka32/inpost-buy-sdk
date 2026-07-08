@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Dto\Offer;
 
+use malpka32\InPostBuySdk\Collection\OfferImageCollection;
 use malpka32\InPostBuySdk\Dto\Offer\Gpsr\GpsrInfoDto;
+use malpka32\InPostBuySdk\Dto\Offer\Image\OfferImageDto;
 use malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto;
 
 /**
@@ -21,6 +23,12 @@ use malpka32\InPostBuySdk\Dto\Offer\Product\ProductDto;
  */
 final class OfferDto
 {
+    /** Offer images – optional (POST/PATCH payload and API response). */
+    public ?OfferImageCollection $images;
+
+    /**
+     * @param OfferImageCollection|list<OfferImageDto>|null $images Offer images
+     */
     public function __construct(
         /** External offer identifier (e.g. SKU from seller system). */
         public string $externalId,
@@ -44,7 +52,13 @@ final class OfferDto
         public ?FeaturesDto $features = null,
         /** Offer status from InPost API (only in response). */
         public ?OfferStatus $status = null,
+        OfferImageCollection|array|null $images = null,
     ) {
+        if ($images instanceof OfferImageCollection) {
+            $this->images = $images;
+        } else {
+            $this->images = is_array($images) ? OfferImageCollection::fromArray($images) : null;
+        }
     }
 
     /** @return array<string, mixed> Payload compatible with OfferProposal (POST/PATCH) */
@@ -61,6 +75,13 @@ final class OfferDto
             'postSale' => $this->postSale?->toArray(),
             'features' => $this->features?->toArray(),
         ];
+
+        if ($this->images !== null && !$this->images->isEmpty()) {
+            $payload['images'] = array_map(
+                static fn (OfferImageDto $image): array => $image->toArray(),
+                $this->images->toArray(),
+            );
+        }
 
         return array_filter($payload, static fn (mixed $v): bool => !empty($v));
     }

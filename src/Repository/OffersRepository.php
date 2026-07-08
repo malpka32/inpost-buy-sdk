@@ -6,12 +6,17 @@ namespace malpka32\InPostBuySdk\Repository;
 
 use malpka32\InPostBuySdk\Api\OffersEndpointInterface;
 use malpka32\InPostBuySdk\Collection\DepositLabelCollection;
+use malpka32\InPostBuySdk\Collection\OfferAttributePatchOperationCollection;
 use malpka32\InPostBuySdk\Collection\OfferCollection;
+use malpka32\InPostBuySdk\Collection\OfferCommandResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferPriceUpdateCollection;
 use malpka32\InPostBuySdk\Collection\OfferPutResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferStockUpdateCollection;
 use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
 use malpka32\InPostBuySdk\Dto\Common\ListSort;
 use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferCommandResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferDetailsDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferEventsResultDto;
@@ -19,6 +24,7 @@ use malpka32\InPostBuySdk\Dto\Offer\Response\OfferHintResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferMetadataDto;
 use malpka32\InPostBuySdk\Dto\Offer\Response\OfferPutResultDto;
 use malpka32\InPostBuySdk\Helper\ArrayHelper;
+use malpka32\InPostBuySdk\Mapper\Offer\Command\OfferCommandResultCollectionMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Deposit\DepositLabelMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
 
@@ -28,11 +34,15 @@ use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferCollectionMapper;
  */
 final class OffersRepository
 {
+    private readonly OfferCommandResultCollectionMapper $commandResultCollectionMapper;
+
     public function __construct(
         private readonly OffersEndpointInterface $endpoint,
         private readonly OfferCollectionMapper $offerResponseMapper,
         private readonly DepositLabelMapper $depositLabelMapper,
+        ?OfferCommandResultCollectionMapper $commandResultCollectionMapper = null,
     ) {
+        $this->commandResultCollectionMapper = $commandResultCollectionMapper ?? new OfferCommandResultCollectionMapper();
     }
 
     /**
@@ -99,6 +109,57 @@ final class OffersRepository
             $collection->add(OfferPutResultDto::fromArray($item));
         }
         return $collection;
+    }
+
+    /**
+     * Batch Update Offer Price – updates price for multiple offers in one request.
+     */
+    public function updateOfferPrices(OfferPriceUpdateCollection $updates): OfferCommandResultCollection
+    {
+        if ($updates->isEmpty()) {
+            return new OfferCommandResultCollection();
+        }
+
+        $payload = [];
+        foreach ($updates as $update) {
+            $payload[] = $update->toArray();
+        }
+
+        $data = $this->endpoint->updatePrices($payload);
+        return $this->commandResultCollectionMapper->map($data);
+    }
+
+    /**
+     * Batch Update Offer Stock – updates stock for multiple offers in one request.
+     */
+    public function updateOfferStocks(OfferStockUpdateCollection $updates): OfferCommandResultCollection
+    {
+        if ($updates->isEmpty()) {
+            return new OfferCommandResultCollection();
+        }
+
+        $payload = [];
+        foreach ($updates as $update) {
+            $payload[] = $update->toArray();
+        }
+
+        $data = $this->endpoint->updateStocks($payload);
+        return $this->commandResultCollectionMapper->map($data);
+    }
+
+    /**
+     * Patch Offer attributes – applies upsert/remove operations in array order.
+     * Empty collection results in no changes (no-op).
+     */
+    public function patchOfferAttributes(string $offerId, OfferAttributePatchOperationCollection $operations): OfferCommandResultDto
+    {
+        $ops = [];
+        foreach ($operations as $operation) {
+            $ops[] = $operation->toArray();
+        }
+
+        $data = $this->endpoint->patchAttributes($offerId, ['operations' => $ops]);
+        return OfferCommandResultDto::fromArray($data);
     }
 
     public function getOffer(string $offerId): OfferDto

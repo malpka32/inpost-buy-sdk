@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace malpka32\InPostBuySdk\Tests\Repository;
 
+use malpka32\InPostBuySdk\Collection\OfferAttributePatchOperationCollection;
 use malpka32\InPostBuySdk\Collection\OfferCollection;
+use malpka32\InPostBuySdk\Collection\OfferPriceUpdateCollection;
+use malpka32\InPostBuySdk\Collection\OfferStockUpdateCollection;
 use malpka32\InPostBuySdk\Dto\Common\ListSort;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferAttributePatchOperationDto;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferPriceUpdateDto;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferStockUpdateDto;
+use malpka32\InPostBuySdk\Dto\Offer\Core\MoneyDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferStatus;
@@ -109,6 +116,83 @@ final class OffersRepositoryTest extends TestCase
         $this->assertCount(2, $ids);
         $this->assertSame('offer-uuid-1', $ids->offsetGet(0)->offerId);
         $this->assertSame('offer-uuid-2', $ids->offsetGet(1)->offerId);
+    }
+
+    public function testUpdateOfferPricesSendsPayloadAndMapsResults(): void
+    {
+        $endpoint = new FakeOffersEndpoint();
+        $endpoint->commandResultsResponse = [
+            ['commandId' => 'cmd-1', 'offerId' => 'offer-1', 'status' => 'PENDING'],
+            ['commandId' => 'cmd-2', 'offerId' => 'offer-2', 'status' => 'PENDING'],
+        ];
+        $repository = $this->createRepository($endpoint);
+
+        $updates = OfferPriceUpdateCollection::fromUpdates(
+            new OfferPriceUpdateDto('offer-1', new MoneyDto(9.99, 'PLN')),
+            new OfferPriceUpdateDto('offer-2', new MoneyDto(19.99, 'PLN')),
+        );
+
+        $result = $repository->updateOfferPrices($updates);
+
+        $this->assertCount(2, $result);
+        $this->assertSame('offer-2', $result->offsetGet(1)->offerId);
+        $this->assertNotNull($endpoint->lastUpdatePricesPayload);
+        $this->assertSame('offer-1', $endpoint->lastUpdatePricesPayload[0]['offerId']);
+        $this->assertSame(9.99, $endpoint->lastUpdatePricesPayload[0]['price']['amount']);
+    }
+
+    public function testUpdateOfferPricesEmptyDoesNotCallEndpoint(): void
+    {
+        $endpoint = new FakeOffersEndpoint();
+        $repository = $this->createRepository($endpoint);
+
+        $result = $repository->updateOfferPrices(new OfferPriceUpdateCollection());
+
+        $this->assertCount(0, $result);
+        $this->assertNull($endpoint->lastUpdatePricesPayload);
+    }
+
+    public function testUpdateOfferStocksSendsPayloadAndMapsResults(): void
+    {
+        $endpoint = new FakeOffersEndpoint();
+        $endpoint->commandResultsResponse = [
+            ['commandId' => 'cmd-1', 'offerId' => 'offer-1', 'status' => 'PENDING'],
+        ];
+        $repository = $this->createRepository($endpoint);
+
+        $updates = OfferStockUpdateCollection::fromUpdates(
+            new OfferStockUpdateDto('offer-1', new StockDto(50, 'UNIT')),
+        );
+
+        $result = $repository->updateOfferStocks($updates);
+
+        $this->assertCount(1, $result);
+        $this->assertSame('offer-1', $result->offsetGet(0)->offerId);
+        $this->assertNotNull($endpoint->lastUpdateStocksPayload);
+        $this->assertSame(50, $endpoint->lastUpdateStocksPayload[0]['stock']['quantity']);
+    }
+
+    public function testPatchOfferAttributesWrapsOperationsAndMapsResult(): void
+    {
+        $endpoint = new FakeOffersEndpoint();
+        $endpoint->patchAttributesResponse = ['commandId' => 'cmd-9', 'offerId' => 'offer-9', 'status' => 'PENDING'];
+        $repository = $this->createRepository($endpoint);
+
+        $operations = OfferAttributePatchOperationCollection::fromOperations(
+            OfferAttributePatchOperationDto::upsert('attr-1', ['Red'], 'pl_PL'),
+            OfferAttributePatchOperationDto::remove('attr-2'),
+        );
+
+        $result = $repository->patchOfferAttributes('offer-9', $operations);
+
+        $this->assertSame('cmd-9', $result->commandId);
+        $this->assertSame('offer-9', $result->offerId);
+        $this->assertNotNull($endpoint->lastPatchAttributesCall);
+        $this->assertSame('offer-9', $endpoint->lastPatchAttributesCall['offerId']);
+        $this->assertArrayHasKey('operations', $endpoint->lastPatchAttributesCall['payload']);
+        $this->assertCount(2, $endpoint->lastPatchAttributesCall['payload']['operations']);
+        $this->assertSame('UPSERT', $endpoint->lastPatchAttributesCall['payload']['operations'][0]['type']);
+        $this->assertSame('REMOVE', $endpoint->lastPatchAttributesCall['payload']['operations'][1]['type']);
     }
 
     public function testGetOfferEventsAcceptsEnumEventTypes(): void

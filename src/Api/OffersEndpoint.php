@@ -116,6 +116,44 @@ final class OffersEndpoint implements OffersEndpointInterface
     }
 
     /**
+     * Batch Update Offer Price.
+     *
+     * @param list<array<string, mixed>> $payload List of { offerId, price: { amount, currency } }
+     * @return array<string, mixed>|list<mixed> List of { commandId, offerId, status }
+     */
+    public function updatePrices(array $payload): array
+    {
+        $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId)) . '/prices';
+        $response = $this->transport->request('PATCH', $this->baseUrl . $path, $payload);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Batch Update Offer Stock.
+     *
+     * @param list<array<string, mixed>> $payload List of { offerId, stock: { quantity, unit } }
+     * @return array<string, mixed>|list<mixed> List of { commandId, offerId, status }
+     */
+    public function updateStocks(array $payload): array
+    {
+        $path = sprintf(self::ORGANIZATION_OFFERS_PATH, rawurlencode($this->organizationId)) . '/stocks';
+        $response = $this->transport->request('PATCH', $this->baseUrl . $path, $payload);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
+     * Patch Offer attributes (upsert/remove operations).
+     *
+     * @param array<string, mixed> $payload { operations: [ { type, id, ... } ] }
+     * @return array<string, mixed> { commandId, offerId, status }
+     */
+    public function patchAttributes(string $offerId, array $payload): array
+    {
+        $response = $this->transport->request('PATCH', $this->baseUrl . $this->offersPath($offerId) . '/attributes', $payload);
+        return $this->responseDecoder->decodeToArray($response);
+    }
+
+    /**
      * Close Offer (state → CLOSED). Returns CommandDetails.
      *
      * @return array<string, mixed> { commandId, status }

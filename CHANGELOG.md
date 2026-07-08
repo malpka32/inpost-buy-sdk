@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.6] - 2026-07-08
+
+### Added
+
+- Extended Offers API support (InPost API 1.5.6):
+  - Batch Update Offer Price (`PATCH /v1/organizations/{org}/offers/prices`) via `InPostBuyClient::updateOfferPrices()`.
+  - Batch Update Offer Stock (`PATCH /v1/organizations/{org}/offers/stocks`) via `InPostBuyClient::updateOfferStocks()`.
+  - Patch Offer attributes with `upsert`/`remove` operations (`PATCH /v1/organizations/{org}/offers/{offerId}/attributes`) via `InPostBuyClient::patchOfferAttributes()`.
+- New typed DTOs and value objects:
+  - `MoneyDto` (shared `Money` shape for batch price updates).
+  - `OfferPriceUpdateDto`, `OfferStockUpdateDto` request payloads.
+  - `OfferCommandResultDto` (`commandId`, `offerId`, `status`) response object.
+  - `OfferAttributePatchOperationDto` with `OfferAttributePatchOperationType` enum (`UPSERT`, `REMOVE`) and `upsert()`/`remove()` factories.
+  - `OfferImageDto` for offer `images` (`fileName`, `fileUrl`, `priority`).
+- New collections: `OfferPriceUpdateCollection`, `OfferStockUpdateCollection`, `OfferCommandResultCollection`, `OfferAttributePatchOperationCollection`, `OfferImageCollection`.
+- New mappers: `OfferCommandResultCollectionMapper`, `OfferImageCollectionMapper`.
+- Unit tests for new DTOs, mappers, and repository methods.
+
+### Changed
+
+- `OfferDto` now supports the `images` field (optional constructor argument, backward compatible) and serializes it in `toArray()`.
+- `OfferDtoMapper` maps `images` from API responses into `OfferImageCollection`.
+- `OffersEndpoint`/`OffersEndpointInterface` extended with `updatePrices()`, `updateStocks()`, `patchAttributes()`.
+- `OffersRepository` extended with `updateOfferPrices()`, `updateOfferStocks()`, `patchOfferAttributes()` (empty operation set is a no-op).
+
+---
+
 ## [0.7.5] - 2026-03-25
 
 ### Added
@@ -160,6 +187,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support section with buycoffee.to link
 
 
+[0.7.6]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.6
+[0.7.5]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.5
 [0.7.4]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.4
 [0.7.3]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.3
 [0.7.2]: https://github.com/malpka32/inpost-buy-sdk/releases/tag/v0.7.2

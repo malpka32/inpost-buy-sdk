@@ -10,8 +10,12 @@ use malpka32\InPostBuySdk\Collection\AttachmentCollection;
 use malpka32\InPostBuySdk\Collection\AttributeDefinitionCollection;
 use malpka32\InPostBuySdk\Collection\CategoryTreeCollection;
 use malpka32\InPostBuySdk\Collection\DepositLabelCollection;
+use malpka32\InPostBuySdk\Collection\OfferAttributePatchOperationCollection;
 use malpka32\InPostBuySdk\Collection\OfferCollection;
+use malpka32\InPostBuySdk\Collection\OfferCommandResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferPriceUpdateCollection;
 use malpka32\InPostBuySdk\Collection\OfferPutResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferStockUpdateCollection;
 use malpka32\InPostBuySdk\Collection\OrderCollection;
 use malpka32\InPostBuySdk\Api\OffersEndpoint;
 use malpka32\InPostBuySdk\Api\OrdersEndpoint;
@@ -22,6 +26,7 @@ use malpka32\InPostBuySdk\Config\Language;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDetailedDto;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDto;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferCommandResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
 use malpka32\InPostBuySdk\Dto\Offer\Attachment\AttachmentType;
@@ -47,6 +52,7 @@ use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferDtoMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferPriceDtoMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferProductDtoMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Core\OfferStockDtoMapper;
+use malpka32\InPostBuySdk\Mapper\Offer\Command\OfferCommandResultCollectionMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Deposit\OfferDepositPositionDtoMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\Gpsr\OfferGpsrSingleMapper;
 use malpka32\InPostBuySdk\Mapper\Offer\PostSale\OfferFeaturesSingleMapper;
@@ -136,7 +142,8 @@ final class InPostBuyClient implements InPostBuyClientInterface
                     new OfferFeaturesSingleMapper()
                 )
             ),
-            new DepositLabelMapper()
+            new DepositLabelMapper(),
+            new OfferCommandResultCollectionMapper()
         );
         $this->offerAttachmentsRepository = new OfferAttachmentsRepository(
             $attachmentsEndpoint,
@@ -189,6 +196,21 @@ final class InPostBuyClient implements InPostBuyClientInterface
     public function putOffers(OfferCollection $offers): OfferPutResultCollection
     {
         return $this->offersRepository->putOffers($offers);
+    }
+
+    public function updateOfferPrices(OfferPriceUpdateCollection $updates): OfferCommandResultCollection
+    {
+        return $this->offersRepository->updateOfferPrices($updates);
+    }
+
+    public function updateOfferStocks(OfferStockUpdateCollection $updates): OfferCommandResultCollection
+    {
+        return $this->offersRepository->updateOfferStocks($updates);
+    }
+
+    public function patchOfferAttributes(string $offerId, OfferAttributePatchOperationCollection $operations): OfferCommandResultDto
+    {
+        return $this->offersRepository->patchOfferAttributes($offerId, $operations);
     }
 
     public function getOffer(string $offerId): OfferDto

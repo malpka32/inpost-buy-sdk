@@ -44,6 +44,30 @@ interface OffersEndpointInterface
     public function update(string $offerId, array $payload): array;
 
     /**
+     * Batch Update Offer Price.
+     *
+     * @param list<array<string, mixed>> $payload
+     * @return array<string, mixed>|list<mixed>
+     */
+    public function updatePrices(array $payload): array;
+
+    /**
+     * Batch Update Offer Stock.
+     *
+     * @param list<array<string, mixed>> $payload
+     * @return array<string, mixed>|list<mixed>
+     */
+    public function updateStocks(array $payload): array;
+
+    /**
+     * Patch Offer attributes (upsert/remove).
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    public function patchAttributes(string $offerId, array $payload): array;
+
+    /**
      * @return array<string, mixed>
      */
     public function close(string $offerId): array;

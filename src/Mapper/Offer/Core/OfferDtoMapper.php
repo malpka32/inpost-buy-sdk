@@ -34,6 +34,7 @@ final class OfferDtoMapper implements ItemMapperInterface
         private readonly SingleItemMapperInterface $postSaleMapper = new OfferPostSaleSingleMapper(),
         /** @var SingleItemMapperInterface<\malpka32\InPostBuySdk\Dto\Offer\FeaturesDto> */
         private readonly SingleItemMapperInterface $featuresMapper = new OfferFeaturesSingleMapper(),
+        private readonly OfferImageCollectionMapper $imageCollectionMapper = new OfferImageCollectionMapper(),
     ) {
     }
 
@@ -58,6 +59,7 @@ final class OfferDtoMapper implements ItemMapperInterface
         $features = $this->featuresMapper->map($offer['features'] ?? null);
         $inpostOfferId = ArrayHelper::get($offer, 'id');
         $status = ArrayHelper::get($offer, 'status');
+        $images = $this->imageCollectionMapper->map($offer['images'] ?? null);
         return new OfferDto(
             externalId: $externalId,
             product: $productDto,
@@ -70,6 +72,7 @@ final class OfferDtoMapper implements ItemMapperInterface
             postSale: $postSale,
             features: $features,
             status: $status !== null ? OfferStatus::tryFrom(ArrayHelper::asString($status)) : null,
+            images: $images,
         );
     }
 }

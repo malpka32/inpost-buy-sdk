@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace malpka32\InPostBuySdk\Tests\Dto;
 
 use malpka32\InPostBuySdk\Collection\AttributeValueCollection;
+use malpka32\InPostBuySdk\Collection\OfferImageCollection;
 use malpka32\InPostBuySdk\Dto\Attribute\AttributeValueDto;
+use malpka32\InPostBuySdk\Dto\Offer\Image\OfferImageDto;
 use malpka32\InPostBuySdk\Dto\Offer\Deposit\DepositPositionDto;
 use malpka32\InPostBuySdk\Dto\Offer\Deposit\DepositTypeDto;
 use malpka32\InPostBuySdk\Dto\Offer\FeaturesDto;
@@ -94,5 +96,35 @@ final class OfferDtoTest extends TestCase
         $this->assertSame('Return policy', $payload['postSale']['returnPolicy']['description']);
         $this->assertSame('Complaint policy', $payload['postSale']['complaintPolicy']['description']);
         $this->assertFalse($payload['features']['refundable']);
+    }
+
+    public function testToArrayIncludesImages(): void
+    {
+        $product = new ProductDto('Prod', '', 'Brand', 'cat');
+        $stock = new StockDto(1, 'UNIT');
+        $price = new PriceDto(10.0, 'PLN', '23%');
+        $images = OfferImageCollection::fromArray([
+            new OfferImageDto('front.png', 'https://cdn/front.png', 1),
+            new OfferImageDto('back.png'),
+        ]);
+        $dto = new OfferDto('ext-img', $product, $stock, $price, images: $images);
+
+        $payload = $dto->toArray();
+
+        $this->assertArrayHasKey('images', $payload);
+        $this->assertCount(2, $payload['images']);
+        $this->assertSame('front.png', $payload['images'][0]['fileName']);
+        $this->assertSame(1, $payload['images'][0]['priority']);
+        $this->assertSame(['fileName' => 'back.png'], $payload['images'][1]);
+    }
+
+    public function testToArrayOmitsImagesWhenEmpty(): void
+    {
+        $product = new ProductDto('Prod', '', 'Brand', 'cat');
+        $stock = new StockDto(1, 'UNIT');
+        $price = new PriceDto(10.0, 'PLN', '23%');
+        $dto = new OfferDto('ext-noimg', $product, $stock, $price);
+
+        $this->assertArrayNotHasKey('images', $dto->toArray());
     }
 }

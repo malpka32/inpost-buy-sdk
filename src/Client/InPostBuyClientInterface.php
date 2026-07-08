@@ -8,12 +8,17 @@ use malpka32\InPostBuySdk\Collection\AttachmentCollection;
 use malpka32\InPostBuySdk\Collection\AttributeDefinitionCollection;
 use malpka32\InPostBuySdk\Collection\CategoryTreeCollection;
 use malpka32\InPostBuySdk\Collection\DepositLabelCollection;
+use malpka32\InPostBuySdk\Collection\OfferAttributePatchOperationCollection;
 use malpka32\InPostBuySdk\Collection\OfferCollection;
+use malpka32\InPostBuySdk\Collection\OfferCommandResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferPriceUpdateCollection;
 use malpka32\InPostBuySdk\Collection\OfferPutResultCollection;
+use malpka32\InPostBuySdk\Collection\OfferStockUpdateCollection;
 use malpka32\InPostBuySdk\Collection\OrderCollection;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDetailedDto;
 use malpka32\InPostBuySdk\Dto\Category\CategoryDto;
 use malpka32\InPostBuySdk\Dto\Offer\Command\CommandStatusDto;
+use malpka32\InPostBuySdk\Dto\Offer\Command\OfferCommandResultDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferDto;
 use malpka32\InPostBuySdk\Dto\Offer\OfferEventType;
 use malpka32\InPostBuySdk\Dto\Common\ListSort;
@@ -85,6 +90,24 @@ interface InPostBuyClientInterface
      * Sends multiple offers in one request (Batch Offer creation).
      */
     public function putOffers(OfferCollection $offers): OfferPutResultCollection;
+
+    /**
+     * Batch Update Offer Price – updates price for multiple offers in one request.
+     * Returns command results (commandId, offerId, status) per offer.
+     */
+    public function updateOfferPrices(OfferPriceUpdateCollection $updates): OfferCommandResultCollection;
+
+    /**
+     * Batch Update Offer Stock – updates stock for multiple offers in one request.
+     * Returns command results (commandId, offerId, status) per offer.
+     */
+    public function updateOfferStocks(OfferStockUpdateCollection $updates): OfferCommandResultCollection;
+
+    /**
+     * Patch Offer attributes – applies upsert/remove operations for a single offer.
+     * Empty collection results in no changes.
+     */
+    public function patchOfferAttributes(string $offerId, OfferAttributePatchOperationCollection $operations): OfferCommandResultDto;
 
     /**
      * Fetches single offer by ID.
